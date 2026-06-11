@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stanford Sustainability Summit 2026 — Pre-Summit Survey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cardinal: #8C1515;
+    --cardinal-light: #B83A4B;
+    --cardinal-dark: #820000;
+    --cardinal-bg: #f9f0f0;
+    --grey: #53565A;
+    --grey-light: #f4f4f4;
+    --grey-mid: #d0d0d0;
+    --ink: #2E2D29;
+    --white: #ffffff;
+    --border: #e0ddd6;
+    --radius: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.07);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: #f5f4f1;
+    color: var(--ink);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: var(--cardinal);
+    color: white;
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+  }
+
+  .header .eyebrow {
+    font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    margin-bottom: 0.75rem;
+  }
+
+  .header h1 {
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: normal;
+    line-height: 1.3;
+    margin-bottom: 0.4rem;
+  }
+
+  .header .subtitle {
+    font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    opacity: 0.75;
+  }
+
+  .progress-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.2);
+    background-color: var(--grey-mid);
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--cardinal);
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .container {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .section-header { margin-bottom: 1.75rem; }
+
+  .section-label {
+    font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cardinal);
+    margin-bottom: 0.35rem;
+  }
+
+  .section-title {
+    font-size: 1.4rem;
+    font-weight: normal;
+    color: var(--ink);
+    margin-bottom: 0.4rem;
+  }
+
+  .section-desc {
+    font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    color: var(--grey);
+    line-height: 1.5;
+  }
+
+  .intro-block {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--cardinal);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    margin-bottom: 2rem;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .intro-block p + p { margin-top: 0.9rem; }
+
+  .field-group {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.4rem;
+    margin-bottom: 0.85rem;
+    box-shadow: var(--shadow);
+  }
+
+  label {
+    display: block;
+    font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+  }
+
+  label .req { color: var(--cardinal); margin-left: 2px; }
+
+  label .hint {
+    display: block;
+    font-weight: normal;
+    font-style: italic;
+    color: var(--grey);
+    font-size: 12px;
+    margin-top: 0.2rem;
+  }
+
+  input[type="text"], textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: #fafaf9;
+    transition: border-color 0.15s;
+    resize: vertical;
+  }
+
+  input[type="text"]:focus, textarea:focus {
+    outline: none;
+    border-color: var(--cardinal);
+    background: var(--white);
+  }
+
+  textarea { min-height: 85px; }
+
+  .challenge-block {
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--cardinal-light);
+    border-radius: var(--radius);
+    padding: 1.4rem;
+    margin-bottom: 0.85rem;
+    background: var(--white);
+    box-shadow: var(--shadow);
+  }
+
+  .challenge-num {
+    font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cardinal);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    color: var(--cardinal);
+    border: 1px dashed var(--cardinal-light);
+    background: transparent;
+    padding: 7px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 0.25rem;
+    transition: background 0.15s;
+  }
+  .add-btn:hover { background: var(--cardinal-bg); }
+
+  .bubble-question {
+    font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 1rem;
+    line-height: 1.4;
+  }
+
+  .bubble-req { color: var(--cardinal); }
+
+  .bubbles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 0.6rem;
+  }
+
+  .bubble {
+    padding: 6px 13px;
+    border-radius: 999px;
+    border: 1px solid var(--grey-mid);
+    background: var(--white);
+    color: var(--ink);
+    font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.12s;
+    user-select: none;
+  }
+
+  .bubble:hover { border-color: var(--grey); background: #f5f4f1; }
+
+  .bubble.sel-p {
+    background: var(--cardinal-bg);
+    border-color: var(--cardinal);
+    color: var(--cardinal-dark);
+    font-weight: 500;
+  }
+
+  .bubble.sel-s {
+    background: #eeeff1;
+    border-color: var(--grey);
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .tally {
+    font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    color: var(--grey);
+    margin-top: 0.25rem;
+  }
+
+  .tally.required-hint {
+    color: var(--cardinal);
+  }
+
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.75rem;
+  }
+
+  .btn-next, .btn-back, .btn-submit {
+    font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    padding: 10px 22px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+
+  .btn-next, .btn-submit {
+    background: var(--cardinal);
+    color: white;
+    font-weight: 500;
+  }
+
+  .btn-next:hover, .btn-submit:hover { background: var(--cardinal-dark); }
+
+  .btn-back {
+    background: transparent;
+    color: var(--grey);
+    border: 1px solid var(--grey-mid);
+  }
+
+  .btn-back:hover { background: var(--white); }
+
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 4rem 2rem;
+  }
+
+  .success-screen .icon { font-size: 2.5rem; margin-bottom: 1rem; }
+
+  .success-screen h2 {
+    font-size: 1.5rem;
+    font-weight: normal;
+    margin-bottom: 0.75rem;
+    color: var(--cardinal);
+  }
+
+  .success-screen p {
+    font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    color: var(--grey);
+  }
+
+  .error-msg {
+    font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    color: var(--cardinal);
+    margin-top: 0.35rem;
+    display: none;
+  }
+
+  .step-indicator {
+    font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    color: var(--grey);
+  }
+
+  .field-stack { display: flex; flex-direction: column; gap: 0.75rem; }
+
+  @media (max-width: 480px) {
+    .container { padding: 1.25rem 1rem 3rem; }
+    .challenge-block, .field-group { padding: 1.1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">Stanford Graduate School of Business · Stanford Doerr School of Sustainability</div>
+  <h1>Stanford Sustainability Summit 2026<br>Pre-Summit Survey</h1>
+  <div class="subtitle"></div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+<div class="container">
+
+  <!-- Section 1: Intro -->
+  <div class="section active" id="sec-0">
+    <div class="intro-block">
+      <p>Dear Changemakers,</p>
+      <p>We're excited to have you at Stanford this summer.</p>
+      <p>We're trying something different this year! In preparation for the Learning Lab Workshop on July 14, 2026, we would like to understand the unique challenges, solutions, and knowledge you bring, so we can design conversations that create persisting connections across the room.</p>
+      <p>Please answer the following questions. It takes about 5–10 minutes. The more specific you are, the better we will be able to construct the program and the more valuable the day becomes for everyone.</p>
+    </div>
+    <div class="nav">
+      <span class="step-indicator">Section 1 of 8</span>
+      <button class="btn-next" onclick="goTo(1)">Begin →</button>
+    </div>
+  </div>
+
+  <!-- Section 2: About You -->
+  <div class="section" id="sec-1">
+    <div class="section-header">
+      <div class="section-label">Section 2 of 8</div>
+      <div class="section-title">About you</div>
+    </div>
+
+    <div class="field-group">
+      <label for="name">Your name <span class="req">*</span></label>
+      <input type="text" id="name" placeholder="Full name">
+      <div class="error-msg" id="err-name">Please enter your name.</div>
+    </div>
+
+    <div class="field-group">
+      <label for="org">Organization <span class="req">*</span></label>
+      <input type="text" id="org" placeholder="Organization name">
+      <div class="error-msg" id="err-org">Please enter your organization.</div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="goTo(0)">← Back</button>
+      <button class="btn-next" onclick="validateAndGo(1, 2)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- Section 3: Challenges -->
+  <div class="section" id="sec-2">
+    <div class="section-header">
+      <div class="section-label">Section 3 of 8</div>
+      <div class="section-title">Your challenges</div>
+      <div class="section-desc">Think of challenges your organization is actively navigating — real and current, not hypothetical. You can add up to three.</div>
+    </div>
+
+    <div id="challenges-container">
+      <div class="challenge-block" id="challenge-1">
+        <div class="challenge-num">Challenge 1</div>
+        <div class="field-stack">
+          <div>
+            <label>Describe the challenge <span class="req">*</span></label>
+            <textarea id="c1-desc" placeholder="In a few sentences — what is the challenge?"></textarea>
+            <div class="error-msg" id="err-c1-desc">Please describe the challenge.</div>
+          </div>
+          <div>
+            <label>Who bears the consequences? <span class="req">*</span></label>
+            <textarea id="c1-who" style="min-height:65px" placeholder="Communities, ecosystems, industries — at what scale?"></textarea>
+            <div class="error-msg" id="err-c1-who">Please answer this question.</div>
+          </div>
+          <div>
+            <label>What have you already tried, and where has it fallen short? <span class="req">*</span></label>
+            <textarea id="c1-tried" style="min-height:65px" placeholder="Honest assessment of what hasn't worked and why"></textarea>
+            <div class="error-msg" id="err-c1-tried">Please answer this question.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="challenge-block" id="challenge-2" style="display:none">
+        <div class="challenge-num">Challenge 2</div>
+        <div class="field-stack">
+          <div>
+            <label>Describe the challenge <span class="req">*</span></label>
+            <textarea id="c2-desc" placeholder="In a few sentences — what is the challenge?"></textarea>
+          </div>
+          <div>
+            <label>Who bears the consequences? <span class="req">*</span></label>
+            <textarea id="c2-who" style="min-height:65px"></textarea>
+          </div>
+          <div>
+            <label>What have you already tried, and where has it fallen short? <span class="req">*</span></label>
+            <textarea id="c2-tried" style="min-height:65px"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="challenge-block" id="challenge-3" style="display:none">
+        <div class="challenge-num">Challenge 3</div>
+        <div class="field-stack">
+          <div>
+            <label>Describe the challenge <span class="req">*</span></label>
+            <textarea id="c3-desc" placeholder="In a few sentences — what is the challenge?"></textarea>
+          </div>
+          <div>
+            <label>Who bears the consequences? <span class="req">*</span></label>
+            <textarea id="c3-who" style="min-height:65px"></textarea>
+          </div>
+          <div>
+            <label>What have you already tried, and where has it fallen short? <span class="req">*</span></label>
+            <textarea id="c3-tried" style="min-height:65px"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="add-btn" id="add-challenge-btn" onclick="addChallenge()">+ Add another challenge</button>
+
+    <div class="nav">
+      <button class="btn-back" onclick="goTo(1)">← Back</button>
+      <button class="btn-next" onclick="validateAndGo(2, 3)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- Section 4: Solutions -->
+  <div class="section" id="sec-3">
+    <div class="section-header">
+      <div class="section-label">Section 4 of 8</div>
+      <div class="section-title">Your solutions</div>
+      <div class="section-desc">You don't need a complete answer — a partial solution, an emerging experiment, or a direction you believe in all count.</div>
+    </div>
+
+    <div id="solutions-container"></div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="goTo(2)">← Back</button>
+      <button class="btn-next" onclick="validateAndGo(3, 4)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- Section 5: Knowledge Exchange -->
+  <div class="section" id="sec-4">
+    <div class="section-header">
+      <div class="section-label">Section 5 of 8</div>
+      <div class="section-title">Knowledge Exchange</div>
+      <div class="section-desc"></div>
+    </div>
+
+    <div class="field-group">
+      <label for="knowledge-offer">What unique knowledge or experience do you bring that sustainability changemakers in other sectors or other organizations in your sector rarely have access to? <span class="req">*</span></label>
+      <textarea id="knowledge-offer"></textarea>
+      <div class="error-msg" id="err-knowledge-offer">Please answer this question.</div>
+    </div>
+
+    <div class="field-group">
+      <label for="knowledge-seek">What would you like to know more about that you currently feel you are lacking in knowledge/connection/resources? <span class="req">*</span></label>
+      <textarea id="knowledge-seek"></textarea>
+      <div class="error-msg" id="err-knowledge-seek">Please answer this question.</div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="goTo(3)">← Back</button>
+      <button class="btn-next" onclick="validateAndGo(4, 5)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- Section 6: Problems bubble -->
+  <div class="section" id="sec-5">
+    <div class="section-header">
+      <div class="section-label">Section 6 of 8</div>
+      <div class="section-title">Mapping Expertise — Challenges</div>
+      <div class="section-desc">Select all challenge areas your work touches on. You may recognize issues here that didn't come to mind in earlier questions.</div>
+    </div>
+
+    <div class="field-group">
+      <div class="bubble-question">Which challenge areas does your work touch on? <span class="bubble-req">*</span></div>
+      <div class="bubbles" id="prob-bubbles"></div>
+      <div class="tally" id="prob-tally">0 selected</div>
+      <div class="error-msg" id="err-prob">Please select at least one challenge area.</div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="goTo(4)">← Back</button>
+      <button class="btn-next" onclick="validateAndGo(5, 6)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- Section 7: Solutions bubble -->
+  <div class="section" id="sec-6">
+    <div class="section-header">
+      <div class="section-label">Section 7 of 8</div>
+      <div class="section-title">Mapping Expertise — Solution Approaches</div>
+      <div class="section-desc">Select all solution approaches or mechanisms you work with. Again, you may recognize approaches here beyond what you described earlier.</div>
+    </div>
+
+    <div class="field-group">
+      <div class="bubble-question">Which solution approaches or mechanisms do you work with? <span class="bubble-req">*</span></div>
+      <div class="bubbles" id="sol-bubbles"></div>
+      <div class="tally" id="sol-tally">0 selected</div>
+      <div class="error-msg" id="err-sol">Please select at least one approach.</div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="goTo(5)">← Back</button>
+      <button class="btn-next" onclick="validateAndGo(6, 7)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- Section 8: Final Stretch -->
+  <div class="section" id="sec-7">
+    <div class="section-header">
+      <div class="section-label">Section 8 of 8</div>
+      <div class="section-title">The final stretch</div>
+    </div>
+
+    <div class="field-group">
+      <label for="outside-org">Outside of your organization, is there a challenge/solution you've encountered — from another sector, country, or field — that you think deserves more attention? <span class="req">*</span></label>
+      <textarea id="outside-org"></textarea>
+      <div class="error-msg" id="err-outside-org">Please answer this question.</div>
+    </div>
+
+    <div class="field-group">
+      <label for="best-practice">What are a couple of best practices observed in your organization? <span class="req">*</span></label>
+      <textarea id="best-practice"></textarea>
+      <div class="error-msg" id="err-best-practice">Please answer this question.</div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="goTo(6)">← Back</button>
+      <button class="btn-submit" onclick="submitForm()">Submit survey →</button>
+    </div>
+  </div>
+
+  <!-- Success -->
+  <div class="success-screen" id="success">
+    <div class="icon">🌿</div>
+    <h2>Thank you</h2>
+    <p>We are so excited to design the workshop based on the work of changemakers like you. See you soon!</p>
+  </div>
+
+</div>
+
+<script>
+const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+const PROBLEMS = ["Climate extremes","Climate change mitigation","Climate change adaptation & resilience","Energy security","Energy transition","Sustainable infrastructure","Sustainable transportation","Green economy & sustainable business","Population growth & demographic change","Consumption & production","Planetary boundaries","Food security","Water security","Biodiversity & extinction","Oceans & marine resources","Waste & pollution","Plastics","Land use & deforestation","Public health","Sustainable cities & urbanization","Indigenous land care","Conflict & displacement","Climate migration","Environmental justice & equity","Ecosystem services","Rights of nature","Supply chains & trade"];
+
+const SOLUTIONS = ["Circular economy","Climate finance & investment","Technology & innovation","Community organizing & grassroots mobilization","Knowledge exchange & capacity building","Coalition & network building","Education & awareness","Change management","Stakeholder engagement & participation","Policy advocacy & governance","Decarbonization","Behavioral interventions","Climate litigation & legal advocacy","Disaster risk reduction","Measurement & quantification","International cooperation & diplomacy","Carbon markets & offsetting","Standards & certification","Nature-based solutions","Natural capital accounting"];
+
+let currentSection = 0;
+let totalSections = 8;
+let challengeCount = 1;
+let selectedProblems = new Set();
+let selectedSolutions = new Set();
+
+function updateProgress() {
+  const pct = (currentSection / (totalSections - 1)) * 100;
+  document.getElementById('progress').style.width = pct + '%';
+}
+
+function goTo(n) {
+  document.getElementById('sec-' + currentSection).classList.remove('active');
+  currentSection = n;
+  document.getElementById('sec-' + currentSection).classList.add('active');
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (n === 3) buildSolutionFields();
+}
+
+function validateAndGo(from, to) {
+  let valid = true;
+
+  if (from === 1) {
+    ['name','org'].forEach(id => {
+      const el = document.getElementById(id);
+      const err = document.getElementById('err-' + id);
+      if (!el.value.trim()) { err.style.display = 'block'; valid = false; }
+      else err.style.display = 'none';
+    });
+  }
+
+  if (from === 2) {
+    const fields = ['c1-desc','c1-who','c1-tried'];
+    fields.forEach(id => {
+      const el = document.getElementById(id);
+      const err = document.getElementById('err-' + id);
+      if (err && !el.value.trim()) { err.style.display = 'block'; valid = false; }
+      else if (err) err.style.display = 'none';
+    });
+  }
+
+  if (from === 3) {
+    for (let i = 1; i <= challengeCount; i++) {
+      const solEl = document.getElementById('s' + i + '-sol');
+      if (solEl && !solEl.value.trim()) {
+        solEl.style.borderColor = 'var(--cardinal)';
+        valid = false;
+      } else if (solEl) solEl.style.borderColor = '';
+      const condEl = document.getElementById('s' + i + '-conditions');
+      if (condEl && !condEl.value.trim()) {
+        condEl.style.borderColor = 'var(--cardinal)';
+        valid = false;
+      } else if (condEl) condEl.style.borderColor = '';
+    }
+  }
+
+  if (from === 4) {
+    ['knowledge-offer','knowledge-seek'].forEach(id => {
+      const el = document.getElementById(id);
+      const err = document.getElementById('err-' + id);
+      if (!el.value.trim()) { err.style.display = 'block'; valid = false; }
+      else err.style.display = 'none';
+    });
+  }
+
+  if (from === 5) {
+    const err = document.getElementById('err-prob');
+    if (selectedProblems.size === 0) { err.style.display = 'block'; valid = false; }
+    else err.style.display = 'none';
+  }
+
+  if (from === 6) {
+    const err = document.getElementById('err-sol');
+    if (selectedSolutions.size === 0) { err.style.display = 'block'; valid = false; }
+    else err.style.display = 'none';
+  }
+
+  if (valid) goTo(to);
+}
+
+function addChallenge() {
+  if (challengeCount >= 3) return;
+  challengeCount++;
+  document.getElementById('challenge-' + challengeCount).style.display = 'block';
+  if (challengeCount === 3) document.getElementById('add-challenge-btn').style.display = 'none';
+}
+
+function buildSolutionFields() {
+  const container = document.getElementById('solutions-container');
+  container.innerHTML = '';
+  for (let i = 1; i <= challengeCount; i++) {
+    const desc = document.getElementById('c' + i + '-desc').value.trim();
+    if (!desc) continue;
+    const block = document.createElement('div');
+    block.className = 'challenge-block';
+    block.innerHTML = `
+      <div class="challenge-num">Solution for Challenge ${i}</div>
+      <div style="background:#fafaf9;border:1px solid var(--border);border-radius:5px;padding:9px 11px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:var(--grey);margin-bottom:1rem;font-style:italic;">"${desc.substring(0,130)}${desc.length>130?'…':''}"</div>
+      <div class="field-stack">
+        <div>
+          <label>What solution(s) would help with this challenge? <span class="req">*</span></label>
+          <textarea id="s${i}-sol" placeholder="A partial solution, emerging experiment, or direction you believe in all count"></textarea>
+        </div>
+        <div>
+          <label>What would need to be true for this to work? <span style="font-weight:normal;font-style:italic;color:var(--grey)">assumptions, conditions, dependencies</span> <span class="req">*</span></label>
+          <textarea id="s${i}-conditions" style="min-height:65px"></textarea>
+        </div>
+      </div>`;
+    container.appendChild(block);
+  }
+}
+
+function makeBubbles(containerId, tallyId, items, selClass) {
+  const container = document.getElementById(containerId);
+  const tally = document.getElementById(tallyId);
+  const store = selClass === 'sel-p' ? selectedProblems : selectedSolutions;
+  items.forEach(item => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'bubble';
+    b.textContent = item;
+    b.onclick = () => {
+      if (store.has(item)) { store.delete(item); b.classList.remove(selClass); }
+      else { store.add(item); b.classList.add(selClass); }
+      tally.textContent = store.size === 0 ? '0 selected' : `${store.size} selected`;
+    };
+    container.appendChild(b);
+  });
+}
+
+makeBubbles('prob-bubbles', 'prob-tally', PROBLEMS, 'sel-p');
+makeBubbles('sol-bubbles', 'sol-tally', SOLUTIONS, 'sel-s');
+
+function collectData() {
+  return {
+    timestamp: new Date().toISOString(),
+    name: document.getElementById('name').value.trim(),
+    organization: document.getElementById('org').value.trim(),
+    challenge_1_description: document.getElementById('c1-desc').value.trim(),
+    challenge_1_consequences: document.getElementById('c1-who').value.trim(),
+    challenge_1_tried: document.getElementById('c1-tried').value.trim(),
+    challenge_2_description: document.getElementById('c2-desc').value.trim(),
+    challenge_2_consequences: document.getElementById('c2-who').value.trim(),
+    challenge_2_tried: document.getElementById('c2-tried').value.trim(),
+    challenge_3_description: document.getElementById('c3-desc').value.trim(),
+    challenge_3_consequences: document.getElementById('c3-who').value.trim(),
+    challenge_3_tried: document.getElementById('c3-tried').value.trim(),
+    solution_1: (document.getElementById('s1-sol')||{}).value||'',
+    solution_1_conditions: (document.getElementById('s1-conditions')||{}).value||'',
+    solution_2: (document.getElementById('s2-sol')||{}).value||'',
+    solution_2_conditions: (document.getElementById('s2-conditions')||{}).value||'',
+    solution_3: (document.getElementById('s3-sol')||{}).value||'',
+    solution_3_conditions: (document.getElementById('s3-conditions')||{}).value||'',
+    knowledge_offer: document.getElementById('knowledge-offer').value.trim(),
+    knowledge_seek: document.getElementById('knowledge-seek').value.trim(),
+    problems_selected: Array.from(selectedProblems).join('; '),
+    solutions_selected: Array.from(selectedSolutions).join('; '),
+    outside_org: document.getElementById('outside-org').value.trim(),
+    best_practice: document.getElementById('best-practice').value.trim(),
+  };
+}
+
+async function submitForm() {
+  const btn = document.querySelector('.btn-submit');
+
+  // Validate final section
+  let valid = true;
+  ['outside-org','best-practice'].forEach(id => {
+    const el = document.getElementById(id);
+    const err = document.getElementById('err-' + id);
+    if (!el.value.trim()) { err.style.display = 'block'; valid = false; }
+    else err.style.display = 'none';
+  });
+  if (!valid) return;
+
+  btn.textContent = 'Submitting…';
+  btn.disabled = true;
+
+  const data = collectData();
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } catch(e) {
+    console.warn('Submission note:', e);
+  }
+
+  document.getElementById('sec-7').classList.remove('active');
+  document.getElementById('success').style.display = 'block';
+  document.getElementById('progress').style.width = '100%';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+updateProgress();
+</script>
+</body>
+</html>
