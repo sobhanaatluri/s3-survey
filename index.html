@@ -360,7 +360,7 @@
       <p>Dear Changemakers,</p>
       <p>We're excited to have you at Stanford this summer.</p>
       <p>We're trying something different this year! In preparation for the Learning Lab Workshop on July 14, 2026, we would like to understand the unique challenges, solutions, and knowledge you bring, so we can design conversations that create persisting connections across the room.</p>
-      <p>Please answer the following questions. It takes about 15–20 minutes. The more specific you are, the better we will be able to construct the program and the more valuable the day becomes for everyone.</p>
+      <p>Please answer the following questions. It takes about 5–10 minutes. The more specific you are, the better we will be able to construct the program and the more valuable the day becomes for everyone.</p>
     </div>
     <div class="nav">
       <span class="step-indicator">Section 1 of 8</span>
@@ -415,6 +415,11 @@
             <textarea id="c1-who" style="min-height:65px" placeholder="Communities, ecosystems, industries — at what scale?"></textarea>
             <div class="error-msg" id="err-c1-who">Please answer this question.</div>
           </div>
+          <div>
+            <label>What have you already tried, and where has it fallen short? <span class="req">*</span></label>
+            <textarea id="c1-tried" style="min-height:65px" placeholder="Honest assessment of what hasn't worked and why"></textarea>
+            <div class="error-msg" id="err-c1-tried">Please answer this question.</div>
+          </div>
         </div>
       </div>
 
@@ -429,6 +434,10 @@
             <label>Who bears the consequences? <span class="req">*</span></label>
             <textarea id="c2-who" style="min-height:65px"></textarea>
           </div>
+          <div>
+            <label>What have you already tried, and where has it fallen short? <span class="req">*</span></label>
+            <textarea id="c2-tried" style="min-height:65px"></textarea>
+          </div>
         </div>
       </div>
 
@@ -442,6 +451,10 @@
           <div>
             <label>Who bears the consequences? <span class="req">*</span></label>
             <textarea id="c3-who" style="min-height:65px"></textarea>
+          </div>
+          <div>
+            <label>What have you already tried, and where has it fallen short? <span class="req">*</span></label>
+            <textarea id="c3-tried" style="min-height:65px"></textarea>
           </div>
         </div>
       </div>
@@ -480,7 +493,7 @@
     </div>
 
     <div class="field-group">
-      <label for="knowledge-offer">What knowledge or experience do you bring that sustainability changemakers in other sectors — or other organizations in your sector — may not have access to? <span class="req">*</span></label>
+      <label for="knowledge-offer">What unique knowledge or experience do you bring that sustainability changemakers in other sectors or other organizations in your sector rarely have access to? <span class="req">*</span></label>
       <textarea id="knowledge-offer"></textarea>
       <div class="error-msg" id="err-knowledge-offer">Please answer this question.</div>
     </div>
@@ -613,7 +626,7 @@ function validateAndGo(from, to) {
   }
 
   if (from === 2) {
-    const fields = ['c1-desc','c1-who'];
+    const fields = ['c1-desc','c1-who','c1-tried'];
     fields.forEach(id => {
       const el = document.getElementById(id);
       const err = document.getElementById('err-' + id);
@@ -624,11 +637,6 @@ function validateAndGo(from, to) {
 
   if (from === 3) {
     for (let i = 1; i <= challengeCount; i++) {
-      const triedEl = document.getElementById('s' + i + '-tried');
-      if (triedEl && !triedEl.value.trim()) {
-        triedEl.style.borderColor = 'var(--cardinal)';
-        valid = false;
-      } else if (triedEl) triedEl.style.borderColor = '';
       const solEl = document.getElementById('s' + i + '-sol');
       if (solEl && !solEl.value.trim()) {
         solEl.style.borderColor = 'var(--cardinal)';
@@ -686,10 +694,6 @@ function buildSolutionFields() {
       <div style="background:#fafaf9;border:1px solid var(--border);border-radius:5px;padding:9px 11px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:var(--grey);margin-bottom:1rem;font-style:italic;">"${desc.substring(0,130)}${desc.length>130?'…':''}"</div>
       <div class="field-stack">
         <div>
-          <label>What have you already tried, and where has it fallen short? <span class="req">*</span></label>
-          <textarea id="s${i}-tried" placeholder="Honest assessment of what hasn't worked and why" style="min-height:65px"></textarea>
-        </div>
-        <div>
           <label>What solution(s) would help with this challenge? <span class="req">*</span></label>
           <textarea id="s${i}-sol" placeholder="A partial solution, emerging experiment, or direction you believe in all count"></textarea>
         </div>
@@ -730,10 +734,13 @@ function collectData() {
     organization: document.getElementById('org').value.trim(),
     challenge_1_description: document.getElementById('c1-desc').value.trim(),
     challenge_1_consequences: document.getElementById('c1-who').value.trim(),
+    challenge_1_tried: document.getElementById('c1-tried').value.trim(),
     challenge_2_description: document.getElementById('c2-desc').value.trim(),
     challenge_2_consequences: document.getElementById('c2-who').value.trim(),
+    challenge_2_tried: document.getElementById('c2-tried').value.trim(),
     challenge_3_description: document.getElementById('c3-desc').value.trim(),
     challenge_3_consequences: document.getElementById('c3-who').value.trim(),
+    challenge_3_tried: document.getElementById('c3-tried').value.trim(),
     solution_1_tried: (document.getElementById('s1-tried')||{}).value||'',
     solution_1: (document.getElementById('s1-sol')||{}).value||'',
     solution_1_conditions: (document.getElementById('s1-conditions')||{}).value||'',
