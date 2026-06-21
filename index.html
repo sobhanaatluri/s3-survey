@@ -64,7 +64,6 @@
 
   .progress-bar {
     height: 3px;
-    background: rgba(255,255,255,0.2);
     background-color: var(--grey-mid);
   }
   .progress-fill {
@@ -141,15 +140,6 @@
   }
 
   label .req { color: var(--cardinal); margin-left: 2px; }
-
-  label .hint {
-    display: block;
-    font-weight: normal;
-    font-style: italic;
-    color: var(--grey);
-    font-size: 12px;
-    margin-top: 0.2rem;
-  }
 
   input[type="text"], textarea {
     width: 100%;
@@ -263,10 +253,6 @@
     margin-top: 0.25rem;
   }
 
-  .tally.required-hint {
-    color: var(--cardinal);
-  }
-
   .nav {
     display: flex;
     justify-content: space-between;
@@ -374,34 +360,31 @@
       <div class="section-label">Section 2 of 8</div>
       <div class="section-title">About you</div>
     </div>
-
     <div class="field-group">
       <label for="name">Your name <span class="req">*</span></label>
       <input type="text" id="name" placeholder="Full name">
       <div class="error-msg" id="err-name">Please enter your name.</div>
     </div>
-
     <div class="field-group">
       <label for="org">Organization <span class="req">*</span></label>
       <input type="text" id="org" placeholder="Organization name">
       <div class="error-msg" id="err-org">Please enter your organization.</div>
     </div>
-
     <div class="nav">
       <button class="btn-back" onclick="goTo(0)">← Back</button>
       <button class="btn-next" onclick="validateAndGo(1, 2)">Continue →</button>
     </div>
   </div>
 
-  <!-- Section 3: Challenges -->
+  <!-- Section 3: Challenges — NO tried field here -->
   <div class="section" id="sec-2">
     <div class="section-header">
       <div class="section-label">Section 3 of 8</div>
       <div class="section-title">Your challenges</div>
       <div class="section-desc">Think of challenges your organization is actively navigating — real and current, not hypothetical. You can add up to three.</div>
     </div>
-
     <div id="challenges-container">
+
       <div class="challenge-block" id="challenge-1">
         <div class="challenge-num">Challenge 1</div>
         <div class="field-stack">
@@ -445,26 +428,23 @@
           </div>
         </div>
       </div>
+
     </div>
-
     <button class="add-btn" id="add-challenge-btn" onclick="addChallenge()">+ Add another challenge</button>
-
     <div class="nav">
       <button class="btn-back" onclick="goTo(1)">← Back</button>
       <button class="btn-next" onclick="validateAndGo(2, 3)">Continue →</button>
     </div>
   </div>
 
-  <!-- Section 4: Solutions -->
+  <!-- Section 4: Solutions — tried field lives HERE -->
   <div class="section" id="sec-3">
     <div class="section-header">
       <div class="section-label">Section 4 of 8</div>
       <div class="section-title">Your solutions</div>
       <div class="section-desc">You don't need a complete answer — a partial solution, an emerging experiment, or a direction you believe in all count.</div>
     </div>
-
     <div id="solutions-container"></div>
-
     <div class="nav">
       <button class="btn-back" onclick="goTo(2)">← Back</button>
       <button class="btn-next" onclick="validateAndGo(3, 4)">Continue →</button>
@@ -476,21 +456,17 @@
     <div class="section-header">
       <div class="section-label">Section 5 of 8</div>
       <div class="section-title">Knowledge Exchange</div>
-      <div class="section-desc"></div>
     </div>
-
     <div class="field-group">
       <label for="knowledge-offer">What knowledge or experience do you bring that sustainability changemakers in other sectors — or other organizations in your sector — may not have access to? <span class="req">*</span></label>
       <textarea id="knowledge-offer"></textarea>
       <div class="error-msg" id="err-knowledge-offer">Please answer this question.</div>
     </div>
-
     <div class="field-group">
       <label for="knowledge-seek">What would you like to know more about that you currently feel you are lacking in knowledge/connection/resources? <span class="req">*</span></label>
       <textarea id="knowledge-seek"></textarea>
       <div class="error-msg" id="err-knowledge-seek">Please answer this question.</div>
     </div>
-
     <div class="nav">
       <button class="btn-back" onclick="goTo(3)">← Back</button>
       <button class="btn-next" onclick="validateAndGo(4, 5)">Continue →</button>
@@ -504,14 +480,12 @@
       <div class="section-title">Mapping Expertise — Challenges</div>
       <div class="section-desc">Select all challenge areas your work touches on. You may recognize issues here that didn't come to mind in earlier questions.</div>
     </div>
-
     <div class="field-group">
       <div class="bubble-question">Which challenge areas does your work touch on? <span class="bubble-req">*</span></div>
       <div class="bubbles" id="prob-bubbles"></div>
       <div class="tally" id="prob-tally">0 selected</div>
       <div class="error-msg" id="err-prob">Please select at least one challenge area.</div>
     </div>
-
     <div class="nav">
       <button class="btn-back" onclick="goTo(4)">← Back</button>
       <button class="btn-next" onclick="validateAndGo(5, 6)">Continue →</button>
@@ -525,14 +499,12 @@
       <div class="section-title">Mapping Expertise — Solution Approaches</div>
       <div class="section-desc">Select all solution approaches or mechanisms you work with. Again, you may recognize approaches here beyond what you described earlier.</div>
     </div>
-
     <div class="field-group">
       <div class="bubble-question">Which solution approaches or mechanisms do you work with? <span class="bubble-req">*</span></div>
       <div class="bubbles" id="sol-bubbles"></div>
       <div class="tally" id="sol-tally">0 selected</div>
       <div class="error-msg" id="err-sol">Please select at least one approach.</div>
     </div>
-
     <div class="nav">
       <button class="btn-back" onclick="goTo(5)">← Back</button>
       <button class="btn-next" onclick="validateAndGo(6, 7)">Continue →</button>
@@ -545,19 +517,16 @@
       <div class="section-label">Section 8 of 8</div>
       <div class="section-title">The final stretch</div>
     </div>
-
     <div class="field-group">
       <label for="outside-org">Outside of your organization, is there a challenge/solution you've encountered — from another sector, country, or field — that you think deserves more attention? <span class="req">*</span></label>
       <textarea id="outside-org"></textarea>
       <div class="error-msg" id="err-outside-org">Please answer this question.</div>
     </div>
-
     <div class="field-group">
       <label for="best-practice">What are a couple of best practices observed in your organization? <span class="req">*</span></label>
       <textarea id="best-practice"></textarea>
       <div class="error-msg" id="err-best-practice">Please answer this question.</div>
     </div>
-
     <div class="nav">
       <button class="btn-back" onclick="goTo(6)">← Back</button>
       <button class="btn-submit" onclick="submitForm()">Submit survey →</button>
@@ -613,8 +582,7 @@ function validateAndGo(from, to) {
   }
 
   if (from === 2) {
-    const fields = ['c1-desc','c1-who'];
-    fields.forEach(id => {
+    ['c1-desc','c1-who'].forEach(id => {
       const el = document.getElementById(id);
       const err = document.getElementById('err-' + id);
       if (err && !el.value.trim()) { err.style.display = 'block'; valid = false; }
@@ -683,7 +651,7 @@ function buildSolutionFields() {
     block.className = 'challenge-block';
     block.innerHTML = `
       <div class="challenge-num">Solution for Challenge ${i}</div>
-      <div style="background:#fafaf9;border:1px solid var(--border);border-radius:5px;padding:9px 11px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:var(--grey);margin-bottom:1rem;font-style:italic;">"${desc.substring(0,130)}${desc.length>130?'…':''}"</div>
+      <div style="background:#fafaf9;border:1px solid var(--border);border-radius:5px;padding:9px 11px;font-family:'Source Sans 3',sans-serif;font-size:13px;color:var(--grey);margin-bottom:1rem;font-style:italic;">"${desc.substring(0,130)}${desc.length>130?'…':''}"</div>
       <div class="field-stack">
         <div>
           <label>What have you already tried, and where has it fallen short? <span class="req">*</span></label>
@@ -728,12 +696,14 @@ function collectData() {
     timestamp: new Date().toISOString(),
     name: document.getElementById('name').value.trim(),
     organization: document.getElementById('org').value.trim(),
+    // Challenges — description and consequences only
     challenge_1_description: document.getElementById('c1-desc').value.trim(),
     challenge_1_consequences: document.getElementById('c1-who').value.trim(),
     challenge_2_description: document.getElementById('c2-desc').value.trim(),
     challenge_2_consequences: document.getElementById('c2-who').value.trim(),
     challenge_3_description: document.getElementById('c3-desc').value.trim(),
     challenge_3_consequences: document.getElementById('c3-who').value.trim(),
+    // Solutions — tried, solution, conditions for each
     solution_1_tried: (document.getElementById('s1-tried')||{}).value||'',
     solution_1: (document.getElementById('s1-sol')||{}).value||'',
     solution_1_conditions: (document.getElementById('s1-conditions')||{}).value||'',
@@ -743,10 +713,13 @@ function collectData() {
     solution_3_tried: (document.getElementById('s3-tried')||{}).value||'',
     solution_3: (document.getElementById('s3-sol')||{}).value||'',
     solution_3_conditions: (document.getElementById('s3-conditions')||{}).value||'',
+    // Knowledge Exchange
     knowledge_offer: document.getElementById('knowledge-offer').value.trim(),
     knowledge_seek: document.getElementById('knowledge-seek').value.trim(),
+    // Bubbles
     problems_selected: Array.from(selectedProblems).join('; '),
     solutions_selected: Array.from(selectedSolutions).join('; '),
+    // Final Stretch
     outside_org: document.getElementById('outside-org').value.trim(),
     best_practice: document.getElementById('best-practice').value.trim(),
   };
@@ -754,8 +727,6 @@ function collectData() {
 
 async function submitForm() {
   const btn = document.querySelector('.btn-submit');
-
-  // Validate final section
   let valid = true;
   ['outside-org','best-practice'].forEach(id => {
     const el = document.getElementById(id);
