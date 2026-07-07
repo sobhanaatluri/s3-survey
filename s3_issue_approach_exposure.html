@@ -140,11 +140,12 @@ body {
   border-radius: 10px;
   padding: 1.1rem 1.4rem;
   margin-bottom: 1.75rem;
-  gap: 2.5rem;
+  gap: 2rem;
   flex-wrap: wrap;
+  align-items: flex-start;
 }
 .summary-bar.visible { display: flex; }
-.stat { min-width: 90px; }
+.stat { min-width: 90px; flex-shrink: 0; }
 .stat-num {
   font-family: 'Source Serif 4', serif;
   font-size: 26px;
@@ -158,12 +159,51 @@ body {
   letter-spacing: 0.06em;
   margin-top: 4px;
 }
-.stat-breakdown {
-  font-size: 12px;
-  color: #53565A;
-  line-height: 1.7;
+.bar-panel {
+  flex: 1;
+  min-width: 220px;
 }
-.stat-breakdown b { color: #2E2D29; font-weight: 600; }
+.bar-panel-title {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.bar-row {
+  display: grid;
+  grid-template-columns: 118px 1fr 18px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+  font-size: 11.5px;
+  color: #53565A;
+}
+.bar-row-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bar-track {
+  background: #f1efe8;
+  border-radius: 3px;
+  height: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.bar-fill {
+  display: block;
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  border-radius: 3px;
+}
+.bar-row-count {
+  font-size: 11px;
+  color: #888;
+  text-align: right;
+}
 
 .results-label {
   font-size: 12.5px;
@@ -317,32 +357,53 @@ function renderChips(tab){
   }).join('');
 }
 
+const ALL_ORG_FORMS = Object.keys(ORG_COLORS);
+const ALL_REGIONS = [...new Set(PEOPLE.map(p => p.region).filter(Boolean))].sort();
+
+function barChartHtml(counts, colorFor){
+  const AXIS_MAX = 5;
+  const entries = Object.entries(counts);
+  return entries.map(([name, count]) => {
+    const pct = Math.min(100, (count / AXIS_MAX) * 100);
+    const color = colorFor ? (colorFor(name) || '#999') : '#8C1515';
+    const shortName = name === 'E Asia (China, Japan, S Korea)' ? 'East Asia' : name.split(' (')[0];
+    return `<div class="bar-row">
+      <span class="bar-row-label" title="${name}">${shortName}</span>
+      <span class="bar-track"><span class="bar-fill" style="width:${pct}%;background:${color};"></span></span>
+      <span class="bar-row-count">${count}</span>
+    </div>`;
+  }).join('');
+}
+
 function renderSummary(matched){
   const bar = document.getElementById('summary-bar');
   if(!matched){ bar.className = 'summary-bar'; bar.innerHTML=''; return; }
   bar.className = 'summary-bar visible';
 
   const byOrgForm = {};
+  ALL_ORG_FORMS.forEach(f => byOrgForm[f] = 0);
   const byRegion = {};
+  ALL_REGIONS.forEach(r => byRegion[r] = 0);
+
   matched.forEach(p => {
     if(p.orgForm) byOrgForm[p.orgForm] = (byOrgForm[p.orgForm]||0)+1;
     if(p.region) byRegion[p.region] = (byRegion[p.region]||0)+1;
   });
-  const orgFormStr = Object.entries(byOrgForm).sort((a,b)=>b[1]-a[1])
-    .map(([k,v]) => `<b>${v}</b> ${k}`).join(' · ') || '—';
-  const regionStr = Object.entries(byRegion).sort((a,b)=>b[1]-a[1])
-    .map(([k,v]) => `<b>${v}</b> ${k.split(' (')[0]}`).join(' · ') || '—';
 
   bar.innerHTML = `
     <div class="stat">
       <div class="stat-num">${matched.length}</div>
-      <div class="stat-label">People</div>
+      <div class="stat-label">Changemakers</div>
     </div>
-    <div class="stat-breakdown" style="flex:1;min-width:220px;">
-      <div><b>By org form</b> — ${orgFormStr}</div>
+    <div class="bar-panel">
+      <div class="bar-panel-title">By org form</div>
+      <div style="display:flex;flex-direction:column;justify-content:center;min-height:180px;">
+        ${barChartHtml(byOrgForm, name => ORG_COLORS[name])}
+      </div>
     </div>
-    <div class="stat-breakdown" style="flex:1;min-width:220px;">
-      <div><b>By region</b> — ${regionStr}</div>
+    <div class="bar-panel">
+      <div class="bar-panel-title">By region</div>
+      ${barChartHtml(byRegion, () => '#B8860B')}
     </div>
   `;
 }
@@ -355,7 +416,7 @@ function renderPeople(matched){
     grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">Select a tag above to see who's working on it.</div>`;
     return;
   }
-  label.textContent = matched.length + (matched.length === 1 ? ' person matches' : ' people match') + ' your selection';
+  label.textContent = matched.length + (matched.length === 1 ? ' changemaker matches' : ' changemakers match') + ' your selection';
   if(matched.length === 0){
     grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">No one matches this combination — try removing a tag.</div>`;
     return;
