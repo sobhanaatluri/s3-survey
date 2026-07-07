@@ -13,9 +13,9 @@ body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f5f4f1; co
 .controls label { font-size: 12px; opacity: 0.8; }
 .controls select { font-size: 12px; padding: 4px 8px; border-radius: 5px; border: none; background: rgba(255,255,255,0.2); color: white; cursor: pointer; }
 .controls select option { background: #2E2D29; color: white; }
-.main { display: flex; flex: 1; overflow: hidden; min-height: 0; height: calc(100vh - 88px); }
-.graph-area { flex: 1; position: relative; overflow: hidden; min-height: 0; }
-svg { display: block; width: 100%; height: 100%; }
+.main { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+.graph-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
+svg { display: block; width: 100%; flex: 1; min-height: 0; }
 .sidebar { width: 310px; flex-shrink: 0; background: white; border-left: 0.5px solid #e0ddd6; overflow-y: auto; display: flex; flex-direction: column; }
 .sidebar-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; padding: 2rem; text-align: center; color: #888; }
 .sidebar-empty .icon { font-size: 2rem; margin-bottom: 0.75rem; opacity: 0.35; }
@@ -71,43 +71,45 @@ svg { display: block; width: 100%; height: 100%; }
 </div>
 
 <div class="main">
-  <div class="graph-area"><svg id="graph"></svg></div>
+  <div class="graph-area" id="graph-area" style="position:relative;"><svg id="graph"></svg>
+<div id="graph-legend" style="background:white;border-top:0.5px solid #e0ddd6;padding:0.4rem 1.25rem;display:flex;align-items:center;justify-content:center;gap:2.5rem;flex-shrink:0;">
+  <div style="display:flex;align-items:flex-start;gap:2.5rem;">
+    <div>
+      <div class="leg-title">Org form</div>
+      <div class="leg-grid">
+        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.5" fill="#C2185B"/></svg><span>NGOs</span>
+        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.5" fill="#185FA5"/></svg><span>Public Sector</span>
+        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.5" fill="#0F6E56"/></svg><span>Health &amp; Ed</span>
+        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.5" fill="#993C1D"/></svg><span>Large Firms</span>
+        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.5" fill="#E65100"/></svg><span>Entrepreneurs/VCs</span>
+      </div>
+    </div>
+    <div>
+      <div class="leg-title">Region</div>
+      <div class="leg-two">
+        <div class="leg-sub">
+          <svg width="12" height="12" viewBox="-6 -6 12 12"><circle r="5.5" fill="#888"/></svg><span>N. America</span>
+          <svg width="12" height="12" viewBox="-6 -6 12 12"><rect x="-5" y="-5" width="10" height="10" fill="#888"/></svg><span>Latin America</span>
+          <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 4.76,2.75 -4.76,2.75" fill="#888"/></svg><span>Africa</span>
+          <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 1.4,-1.4 5.5,0 1.4,1.4 0,5.5 -1.4,1.4 -5.5,0 -1.4,-1.4" fill="#888"/></svg><span>Middle East</span>
+        </div>
+        <div class="leg-sub">
+          <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 5.5,0 0,5.5 -5.5,0" fill="#888"/></svg><span>Europe</span>
+          <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 5.23,-1.7 3.23,4.45 -3.23,4.45 -5.23,-1.7" fill="#888"/></svg><span>C &amp; S Asia</span>
+          <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 4.76,-2.75 4.76,2.75 0,5.5 -4.76,2.75 -4.76,-2.75" fill="#888"/></svg><span>SE Asia</span>
+          <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 1.3,-1.8 5.2,-1.8 2.1,0.7 3.2,4.5 0,2.2 -3.2,4.5 -2.1,0.7 -5.2,-1.8 -1.3,-1.8" fill="#888"/></svg><span>E Asia</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
   <div class="sidebar">
     <div class="sidebar-empty" id="sidebar-empty">
       <div class="icon">⬡</div>
       <p>Click a <strong>node</strong> to see a person's challenge summary.<br><br>Click an <strong>edge</strong> to see the shared challenge and conversation topic.</p>
     </div>
     <div class="sidebar-content" id="sidebar-content"></div>
-  </div>
-</div>
-
-<div class="legend-area">
-  <div>
-    <div class="leg-title">Org form</div>
-    <div class="leg-grid">
-      <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.5" fill="#C2185B"/></svg><span>NGOs</span>
-      <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.5" fill="#185FA5"/></svg><span>Public Sector</span>
-      <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.5" fill="#0F6E56"/></svg><span>Health &amp; Ed</span>
-      <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.5" fill="#993C1D"/></svg><span>Large Firms</span>
-      <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.5" fill="#E65100"/></svg><span>Entrepreneurs/VCs</span>
-    </div>
-  </div>
-  <div>
-    <div class="leg-title">Region</div>
-    <div class="leg-two">
-      <div class="leg-sub">
-        <svg width="12" height="12" viewBox="-6 -6 12 12"><circle r="5.5" fill="#888"/></svg><span>N. America</span>
-        <svg width="12" height="12" viewBox="-6 -6 12 12"><rect x="-5" y="-5" width="10" height="10" fill="#888"/></svg><span>Latin America</span>
-        <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 4.76,2.75 -4.76,2.75" fill="#888"/></svg><span>Africa</span>
-        <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 1.5,-1.5 5.5,-1.5 2.2,0.9 3.4,5 0,2.6 -3.4,5 -2.2,0.9 -5.5,-1.5 -1.5,-1.5" fill="#888"/></svg><span>Middle East</span>
-      </div>
-      <div class="leg-sub">
-        <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 5.5,0 0,5.5 -5.5,0" fill="#888"/></svg><span>Europe</span>
-        <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 5.23,-1.7 3.23,4.45 -3.23,4.45 -5.23,-1.7" fill="#888"/></svg><span>C &amp; S Asia</span>
-        <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 4.76,-2.75 4.76,2.75 0,5.5 -4.76,2.75 -4.76,-2.75" fill="#888"/></svg><span>SE Asia</span>
-        <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 1.3,-1.8 5.2,-1.8 2.1,0.7 3.2,4.5 0,2.2 -3.2,4.5 -2.1,0.7 -5.2,-1.8 -1.3,-1.8" fill="#888"/></svg><span>E Asia</span>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -246,21 +248,25 @@ const allEdges = [
   {a:"OLGA",b:"ERIC",score:0.70,topic:"how to build coalitions and financing structures for large-scale humanitarian and climate infrastructure when public systems are overwhelmed and private capital needs proof of concept before committing"},
 ];
 
-const graphEl = document.getElementById('graph');
-  const W = graphEl.parentElement.clientWidth || 760;
-  const H = graphEl.parentElement.clientHeight || 680;
-  const R=9, cx=W/2, cy=H/2, radius=Math.min(W,H)*0.38;
-const ids = Object.keys(people);
-ids.forEach((id,i)=>{
-  const a=(i/ids.length)*2*Math.PI-Math.PI/2;
-  people[id].x=cx+radius*Math.cos(a);
-  people[id].y=cy+radius*Math.sin(a);
-});
-
 const svg=document.getElementById('graph');
-svg.setAttribute('viewBox',`-20 -20 ${W+40} ${H+40}`);
-  svg.setAttribute('width', W);
-  svg.setAttribute('height', H);
+const ids = Object.keys(people);
+const R=9;
+
+function initGraph(){
+  const container = document.getElementById('graph-area');
+  const W = container.clientWidth || 760;
+  const H = svg.clientHeight || container.clientHeight || 680;
+  const cx=W/2, cy=H/2, radius=Math.min(W,H)*0.38;
+  ids.forEach((id,i)=>{
+    const a=(i/ids.length)*2*Math.PI-Math.PI/2;
+    people[id].x=cx+radius*Math.cos(a);
+    people[id].y=cy+radius*Math.sin(a);
+  });
+  svg.setAttribute('viewBox',`-20 -20 ${W+40} ${H+40}`);
+  svg.setAttribute('width',W);
+  svg.setAttribute('height',H);
+  render();
+}
 const edgeGroup=document.createElementNS("http://www.w3.org/2000/svg","g");
 const nodeGroup=document.createElementNS("http://www.w3.org/2000/svg","g");
 svg.appendChild(edgeGroup); svg.appendChild(nodeGroup);
@@ -384,7 +390,9 @@ function render(){
       circle.setAttribute("stroke-width",isActive?"2.5":"1.5");
       g.appendChild(circle);
     }
-    const angle=Math.atan2(p.y-cy,p.x-cx);
+    const Wa=parseFloat(svg.getAttribute('width'))||700;
+    const Ha=parseFloat(svg.getAttribute('height'))||680;
+    const angle=Math.atan2(p.y-(Ha/2),p.x-(Wa/2));
     const labelR = R + 17 + (Math.abs(Math.cos(angle)) > 0.7 ? 4 : 0);
     const lx=Math.cos(angle)*labelR,ly=Math.sin(angle)*labelR;
     const label=document.createElementNS("http://www.w3.org/2000/svg","text");
@@ -419,7 +427,8 @@ ids.slice().sort((a,b)=>people[a].name.localeCompare(people[b].name)).forEach(id
   document.getElementById(id).addEventListener('change',()=>{activeNode=null;activeEdge=null;hideSidebar();render();});
 });
 
-render();
+window.addEventListener('load',()=>{ requestAnimationFrame(()=>{ setTimeout(initGraph,50); }); });
+window.addEventListener('resize',()=>{ activeNode=null;activeEdge=null;hideSidebar();initGraph(); });
 </script>
 </body>
 </html>
