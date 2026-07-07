@@ -246,7 +246,7 @@ const allEdges = [
   {a:"OLGA",b:"ERIC",score:0.70,topic:"how to build coalitions and financing structures for large-scale humanitarian and climate infrastructure when public systems are overwhelmed and private capital needs proof of concept before committing"},
 ];
 
-const W=760, H=720, R=9, cx=380, cy=360, radius=300;
+const W=760, H=720, R=9, cx=380, cy=370, radius=260;
 const ids = Object.keys(people);
 ids.forEach((id,i)=>{
   const a=(i/ids.length)*2*Math.PI-Math.PI/2;
@@ -255,7 +255,7 @@ ids.forEach((id,i)=>{
 });
 
 const svg=document.getElementById('graph');
-svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+svg.setAttribute('viewBox',`-20 -20 ${W+40} ${H+40}`);
 const edgeGroup=document.createElementNS("http://www.w3.org/2000/svg","g");
 const nodeGroup=document.createElementNS("http://www.w3.org/2000/svg","g");
 svg.appendChild(edgeGroup); svg.appendChild(nodeGroup);
