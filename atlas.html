@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Changemaker Atlas — S3 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@400;500;600&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: #f5f4f1;
+  color: #2E2D29;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6vh 1.5rem 4rem;
+}
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8C1515;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+h1 {
+  font-family: 'Source Serif 4', serif;
+  font-weight: 600;
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: #2E2D29;
+  max-width: 16ch;
+}
+.sub {
+  margin-top: 1rem;
+  max-width: 46ch;
+  text-align: center;
+  font-size: 16px;
+  line-height: 1.65;
+  color: #53565A;
+}
+.map-strip {
+  width: 100%;
+  max-width: 720px;
+  height: 2px;
+  margin: 3rem 0 3rem;
+  background: repeating-linear-gradient(90deg, #8C1515 0 6px, transparent 6px 14px);
+  opacity: 0.5;
+}
+.cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.75rem;
+  width: 100%;
+  max-width: 900px;
+}
+@media (max-width: 720px) {
+  .cards { grid-template-columns: 1fr; }
+}
+.card {
+  position: relative;
+  background: white;
+  border: 0.5px solid #e0ddd6;
+  border-radius: 14px;
+  padding: 2.25rem 1.85rem 1.9rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  overflow: hidden;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px -14px rgba(46,45,41,0.22);
+  border-color: #cfcabf;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 5px;
+}
+.card.challenges::before { background: #8C1515; }
+.card.knowledge::before { background: #1a6b4a; }
+.glyph {
+  width: 42px; height: 42px;
+}
+.card-label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.card.challenges .card-label { color: #8C1515; }
+.card.knowledge .card-label { color: #1a6b4a; }
+.card-title {
+  font-family: 'Source Serif 4', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: #2E2D29;
+}
+.card-desc {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #53565A;
+}
+.card-meta {
+  margin-top: auto;
+  padding-top: 1rem;
+  font-size: 12px;
+  color: #888;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.card-meta .arrow { transition: transform 0.18s ease; }
+.card:hover .card-meta .arrow { transform: translateX(4px); }
+footer {
+  margin-top: 4rem;
+  font-size: 12px;
+  color: #a3a09a;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div class="eyebrow">S3 2026 · Day 2 Learning Lab</div>
+<h1>Changemaker Atlas</h1>
+<p class="sub">Maps of the room: networks that connect changemakers along the dimensions that matter most — shared challenges, and knowledge exchange potential.</p>
+
+<div class="map-strip"></div>
+
+<div class="cards">
+  <a class="card challenges" href="./s3_challenge_network.html">
+    <div class="card-title">Shared Challenge Network</div>
+    <div class="card-desc">Where problems overlap across sectors and regions — matched by Jaccard similarity on the structured challenge selections.</div>
+    <div class="card-meta">Open the map <span class="arrow">→</span></div>
+  </a>
+
+  <a class="card knowledge" href="./s3_knowledge_network.html">
+    <div class="card-title">Knowledge Flow Network</div>
+    <div class="card-desc">Who offers what, and who's looking for it — directed flows built from each person's own words on what they know and need.</div>
+    <div class="card-meta">Open the map <span class="arrow">→</span></div>
+  </a>
+</div>
+
+<footer>Built for the Learning Lab Workshop · July 14, 2026</footer>
+
+</body>
+</html>
