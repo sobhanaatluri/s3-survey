@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S3 2026 — Shared Challenge Network</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f5f4f1; color: #2E2D29; display: flex; flex-direction: column; min-height: 100vh; }
+.top-bar { background: #1a6b4a; color: white; padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.top-bar h1 { font-size: 15px; font-weight: 500; }
+.controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-left: auto; }
+.controls label { font-size: 12px; opacity: 0.8; }
+.controls select { font-size: 12px; padding: 4px 8px; border-radius: 5px; border: none; background: rgba(255,255,255,0.2); color: white; cursor: pointer; }
+.controls select option { background: #2E2D29; color: white; }
+.main { display: flex; flex: 1; overflow: hidden; }
+.graph-area { flex: 1; position: relative; overflow: hidden; }
+svg { display: block; width: 100%; height: 100%; }
+.sidebar { width: 310px; flex-shrink: 0; background: white; border-left: 0.5px solid #e0ddd6; overflow-y: auto; display: flex; flex-direction: column; }
+.sidebar-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; padding: 2rem; text-align: center; color: #888; }
+.sidebar-empty .icon { font-size: 2rem; margin-bottom: 0.75rem; opacity: 0.35; }
+.sidebar-empty p { font-size: 13px; line-height: 1.6; }
+.sidebar-content { padding: 1.25rem; display: none; }
+.sidebar-content.visible { display: block; }
+.s-type { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #1a6b4a; font-weight: 600; margin-bottom: 0.6rem; }
+.s-name { font-size: 16px; font-weight: 500; color: #2E2D29; margin-bottom: 0.2rem; line-height: 1.3; }
+.s-org { font-size: 13px; color: #2E2D29; margin-bottom: 0.5rem; }
+.s-tag-row { display: flex; align-items: center; gap: 6px; margin-bottom: 1.1rem; flex-wrap: wrap; }
+.s-color-rect { width: 28px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+.s-tag { font-size: 11px; color: #53565A; background: #f1efe8; padding: 2px 8px; border-radius: 3px; }
+.s-section-label { font-size: 10px; font-weight: 600; color: #53565A; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 0.35rem; margin-top: 1rem; }
+.s-section-body { font-size: 13px; color: #2E2D29; line-height: 1.6; }
+.score-pill { display: inline-block; background: #E1F5EE; color: #0F6E56; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 99px; margin-bottom: 0.75rem; }
+.edge-card { background: #fafaf8; border: 0.5px solid #e0ddd6; border-radius: 8px; padding: 0.9rem; margin-bottom: 0.75rem; }
+.edge-card-name { font-size: 13px; font-weight: 500; margin-bottom: 0.1rem; }
+.edge-card-org { font-size: 11px; color: #888; margin-bottom: 0.5rem; }
+.edge-card-challenge { font-size: 12px; color: #2E2D29; line-height: 1.55; }
+.topic-box { background: #E1F5EE; border: 0.5px solid #5DCAA5; border-radius: 8px; padding: 0.9rem; margin-top: 0.5rem; }
+.topic-box-label { font-size: 10px; font-weight: 600; color: #0F6E56; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+.topic-box-text { font-size: 13px; color: #085041; line-height: 1.55; }
+.legend-area { background: white; border-top: 0.5px solid #e0ddd6; padding: 0.5rem 1.5rem; display: flex; gap: 3rem; flex-wrap: wrap; }
+.leg-title { font-size: 10px; font-weight: 600; color: #53565A; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
+.leg-grid { display: grid; grid-template-columns: 14px 1fr; row-gap: 4px; column-gap: 6px; align-items: center; font-size: 11px; color: #53565A; }
+.leg-two { display: grid; grid-template-columns: repeat(2, auto); column-gap: 20px; }
+.leg-sub { display: grid; grid-template-columns: 14px 1fr; row-gap: 4px; column-gap: 6px; align-items: center; font-size: 11px; color: #53565A; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1>S3 2026 — Shared Challenge Network</h1>
+  <div class="controls">
+    <label>Org form:</label>
+    <select id="filter-org">
+      <option value="all">All</option>
+      <option value="NGOs">NGOs</option>
+      <option value="Public Sector">Public Sector</option>
+      <option value="Health & Education">Health & Ed</option>
+      <option value="Large Firms">Large Firms</option>
+      <option value="Entrepreneurs / Venture Caps">Entrepreneurs/VCs</option>
+    </select>
+    <label>Person:</label>
+    <select id="filter-person"><option value="all">All</option></select>
+    <label>Min score:</label>
+    <select id="filter-score">
+      <option value="0.55">≥ 0.55</option>
+      <option value="0.70" selected>≥ 0.70</option>
+      <option value="0.80">≥ 0.80</option>
+    </select>
+  </div>
+</div>
+
+<div class="main">
+  <div class="graph-area"><svg id="graph" viewBox="0 0 760 720"></svg></div>
+  <div class="sidebar">
+    <div class="sidebar-empty" id="sidebar-empty">
+      <div class="icon">⬡</div>
+      <p>Click a <strong>node</strong> to see a person's challenge summary.<br><br>Click an <strong>edge</strong> to see the shared challenge and conversation topic.</p>
+    </div>
+    <div class="sidebar-content" id="sidebar-content"></div>
+  </div>
+</div>
+
+<div class="legend-area">
+  <div>
+    <div class="leg-title">Org form</div>
+    <div class="leg-grid">
+      <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.5" fill="#C2185B"/></svg><span>NGOs</span>
+      <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.5" fill="#185FA5"/></svg><span>Public Sector</span>
+      <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.5" fill="#0F6E56"/></svg><span>Health &amp; Ed</span>
+      <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.5" fill="#993C1D"/></svg><span>Large Firms</span>
+      <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.5" fill="#E65100"/></svg><span>Entrepreneurs/VCs</span>
+    </div>
+  </div>
+  <div>
+    <div class="leg-title">Region</div>
+    <div class="leg-two">
+      <div class="leg-sub">
+        <svg width="12" height="12" viewBox="-6 -6 12 12"><circle r="5.5" fill="#888"/></svg><span>N. America</span>
+        <svg width="12" height="12" viewBox="-6 -6 12 12"><rect x="-5" y="-5" width="10" height="10" fill="#888"/></svg><span>Latin America</span>
+        <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 4.76,2.75 -4.76,2.75" fill="#888"/></svg><span>Africa</span>
+        <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 1.5,-1.5 5.5,-1.5 2.2,0.9 3.4,5 0,2.6 -3.4,5 -2.2,0.9 -5.5,-1.5 -1.5,-1.5" fill="#888"/></svg><span>Middle East</span>
+      </div>
+      <div class="leg-sub">
+        <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 5.5,0 0,5.5 -5.5,0" fill="#888"/></svg><span>Europe</span>
+        <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 5.23,-1.7 3.23,4.45 -3.23,4.45 -5.23,-1.7" fill="#888"/></svg><span>C &amp; S Asia</span>
+        <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 4.76,-2.75 4.76,2.75 0,5.5 -4.76,2.75 -4.76,-2.75" fill="#888"/></svg><span>SE Asia</span>
+        <svg width="12" height="12" viewBox="-6 -6 12 12"><polygon points="0,-5.5 1.3,-1.8 5.2,-1.8 2.1,0.7 3.2,4.5 0,2.2 -3.2,4.5 -2.1,0.7 -5.2,-1.8 -1.3,-1.8" fill="#888"/></svg><span>E Asia</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const people = {
+  ANGELA:    {name:"Angela Negrete",org:"Natura Cosmetics",orgForm:"Large Firms",region:"Latin America",challenge:"Moving beyond risk management to future foresight in corporate sustainability; integrating AI, biotech and traceability into a cosmetics supply chain still relying on conventional inputs; supply chain transparency requiring pre-competitive collaboration across industry competitors."},
+  BADRUUN:   {name:"Badruun Gardi",org:"New Nomad Institute",orgForm:"NGOs",region:"C & S Asia",challenge:"A crisis of imagination — humanity stuck in binary systems seeking solutions from the same systems that caused the problems; scaling experiential and nomadic education models for inner change fast enough to matter; finding emergent creative media to shift hearts and minds at scale."},
+  BIGSNA:    {name:"Bigsna Gill",org:"Social Alpha",orgForm:"Public Sector",region:"C & S Asia",challenge:"Climate vulnerability and livelihood insecurity among smallholder farmers and rural communities; constrained adoption of climate-smart agriculture due to affordability and fragmented delivery; unlocking patient capital that rewards long-term community impact rather than short-term returns."},
+  BRAD:      {name:"Brad Ack",org:"Ocean Visions",orgForm:"Health & Education",region:"N. America",challenge:"Getting the world to act on approaching irreversible climate tipping points before they cause mass suffering and displacement; overcoming denial and inaction despite continuous documentation of worsening conditions; developing and deploying climate interventions at planetary scale with high-level governance mechanisms."},
+  CLEMENT:   {name:"Clement Pourtal",org:"The Blue Quest",orgForm:"NGOs",region:"Europe",challenge:"Scaling marine conservation by connecting projects to funders through structured win-win partnerships; sourcing and evaluating the most impactful conservation solutions with robust science and labelling; building networks aligned to the 30x30 ocean protection target and CSR standards."},
+  DANA:      {name:"Dana Lev",org:"EcoPeace Middle East",orgForm:"NGOs",region:"Middle East",challenge:"Recruiting people beyond the already-converted into cross-border environmental dialogue during active conflict; sustaining regional cooperation between Israeli and Palestinian team members through war, fear, grief and burnout; practicing difficult conversations and building resilience in polarized, conflict-affected teams."},
+  DANIEL:    {name:"Daniel Jimenez",org:"Silva",orgForm:"Entrepreneurs / Venture Caps",region:"Latin America",challenge:"Solving a two-sided cold start in Brazil's ecological restoration market — nurseries won't expand without demand, buyers won't commit without supply; productizing trust by determining which high-touch interactions can be digitized for rural non-native users without destroying adoption; unlocking working capital for nurseries against biological cash-flow timelines that traditional lenders won't underwrite."},
+  DESIREE:   {name:"Desiree LaBeaud",org:"HERI Kenya",orgForm:"Health & Education",region:"Africa",challenge:"Funding limitations constraining a small nonprofit's ability to scale sustainability education and outreach in Kenya; measuring community impact on mindset and agency in ways that are visible and compelling to donors; governance friction from a US fiscal sponsor limiting operational flexibility and alignment between US and Kenyan boards."},
+  FRANCIS:   {name:"Francis Mutuku",org:"HERI Kenya",orgForm:"Health & Education",region:"Africa",challenge:"Funding limitations constraining a small nonprofit's ability to scale sustainability education and outreach in Kenya; measuring community impact on mindset and agency in ways that are visible and compelling to donors; governance friction from a US fiscal sponsor limiting operational flexibility and alignment between US and Kenyan boards."},
+  DON:       {name:"Don Mullan",org:"The Assisi Arc",orgForm:"Health & Education",region:"Europe",challenge:"Reconnecting modern centers of power, technology and finance with ethical and moral wisdom to guide innovation; developing a global initiative without patient capital willing to accompany good ideas until they mature into trusted institutions; cultivating values-aligned partnerships that invest in relationships and trust rather than short-term projects."},
+  ERAN:      {name:"Eran Sandhaus",org:"J-Impact VC",orgForm:"Entrepreneurs / Venture Caps",region:"Middle East",challenge:"A severe slowdown in climate technology investment as capital concentrates in AI and defense; corporations scaling back innovation initiatives leaving entrepreneurs without funding and commercialization pathways; combining capital with ecosystem orchestration across VC, corporations and governments to keep early-stage climate innovation alive."},
+  ERIC:      {name:"Eric Olson",org:"HeatWave",orgForm:"Public Sector",region:"N. America",challenge:"A $100B financing gap for adaptation to sea-level rise and climate impacts in the Bay Area vastly exceeding public capacity; building a cross-sector coalition to create a regional Marshall Plan with innovative financing and governance reform; developing robust risk modeling to unlock private capital for climate adaptation infrastructure."},
+  GERALDINE: {name:"Geraldine Westwood",org:"Episcopal Commission / Laudato Si' Asia",orgForm:"Health & Education",region:"SE Asia",challenge:"Preparing communities to thrive in a climate-challenged world with holistic resilience beyond adaptation and mitigation; healing a relational and spiritual polycrisis — broken relationships with nature and each other that make climate agreements impossible; driving ecological conversion within the Catholic Church while protecting vulnerable communities from false climate solutions like predatory carbon schemes."},
+  HUSSAM:    {name:"Hussam Hussein",org:"University of Oxford",orgForm:"Health & Education",region:"Middle East",challenge:"Water scarcity in arid regions driven by causes beyond mainstream narratives — requiring critical political economy analysis of power and narrative; building political will for solutions that are analytically clear but institutionally and politically blocked."},
+  HYERIN:    {name:"Hyerin Park",org:"Enomad / NetZero@Habitats",orgForm:"NGOs",region:"E Asia",challenge:"The awareness-action paradox — citizens have high climate anxiety but lack carbon literacy and do superficial actions; public institutions lack technical frameworks to translate human behavior into actionable emissions data; financializing behavioral carbon into tradable credits requires a globally trusted certification standard that does not yet exist."},
+  KEUNHWAN:  {name:"Keunhwan Kim",org:"POSCO Investment",orgForm:"Large Firms",region:"E Asia",challenge:"Decarbonizing steel — one of the world's largest CO2 emitters — requires entirely new iron reduction methods like hydrogen-based steelmaking; managing cost implications, hydrogen supply chain and downstream industry impacts of transformation at this scale."},
+  MARIA:     {name:"Maria Antonia Loyzaga",org:"Office of the President, Philippines",orgForm:"Public Sector",region:"SE Asia",challenge:"Disaster risk is complex, systemic and multi-scale — requiring trans-disciplinary whole-of-government coordination that governance structures and academic silos resist; global geopolitical crises compound local disaster risk; climate resilience has security implications including cybersecurity and disinformation that societies are poorly prepared for."},
+  MBONG:     {name:"Mbong Fokwa",org:"Umoya Mwa Afrika",orgForm:"NGOs",region:"Africa",challenge:"Convening experts to theorize and advocate for alternative economic models that move away from overconsumption and extraction — with limited human and financial capacity; forging partnerships with like-minded organizations challenging the current economic model that drives African exploitation."},
+  MICHAEL:   {name:"Michael Bloomfield",org:"Netafim",orgForm:"Large Firms",region:"Middle East",challenge:"Farmers face increasing water volatility and record droughts but commodity margins are too thin to invest in precision agriculture technology; building public understanding to stop pitting agriculture against other sectors and creating cross-sector win-win partnerships pairing technology with resource-constrained producers."},
+  SANDY:     {name:"Sandy Alipio",org:"Prime Infrastructure",orgForm:"Large Firms",region:"SE Asia",challenge:"Attracting capital at scale for water security, waste management and energy transition infrastructure in the Philippines — constrained by regulatory limits and equity funding challenges; meeting newly mandated sustainability reporting standards with fragmented data systems and limited internal capacity."},
+  SYDNEY:    {name:"Sydney Speizman",org:"EarthRights International",orgForm:"Public Sector",region:"Africa",challenge:"Federal rollback of environmental protections and civil rights is constraining legal pathways for climate justice and shifting power toward polluters; building non-legal advocacy, community organizing and creative lawyering strategies to protect frontline communities without a sympathetic judiciary."},
+  TAPAS:     {name:"Tapas Chakraborty",org:"BRAC",orgForm:"Health & Education",region:"C & S Asia",challenge:"Sudden budget cuts forcing scaled-down activities and staff departures; overcoming stakeholder resistance and lack of readiness to accept new ideas within organizations; management lacking understanding of underlying science diverting enormous time to justification rather than delivery."},
+  VERONICA:  {name:"Verónica Figueroa",org:"University of Chile",orgForm:"Public Sector",region:"Latin America",challenge:"Ensuring AI development respects Indigenous rights, knowledge systems and data sovereignty — not yet integrated into teaching or institutional governance; strengthening Indigenous rights education across university curricula with meaningful Indigenous scholar participation; producing climate research centered on Indigenous territorial priorities rather than privileging scientific frameworks."},
+  YG:        {name:"YG Kim",org:"Hallym University",orgForm:"Health & Education",region:"E Asia",challenge:"Regional disparity in South Korea with young people preferring Seoul; rebuilding local sustainability by sparking university students' interest in and affection for their regional communities; connecting entrepreneurship education to place-based careers outside the capital."},
+  YASH:      {name:"Yash Kaman",org:"Kerogen | CelerateX",orgForm:"Entrepreneurs / Venture Caps",region:"E Asia",challenge:"Wavering political and investor support for decarbonization amid growing energy demand and affordability pressures; innovating quickly enough within a PE time horizon to scale and reduce costs; using AI for molecular discovery to accelerate timelines from experiment to commercialization in clean energy."},
+  MOHAK:     {name:"Mohak Mangal",org:"Pravah",orgForm:"Entrepreneurs / Venture Caps",region:"N. America",challenge:"Making AI and machine learning infrastructure work for electric grid operators — utilities and system operators who need better tools for planning and running their networks; bridging the gap between frontier tech capability and practical utility adoption; scaling grid intelligence across India and the US where regulatory and technical environments differ sharply."},
+  MANOJ:     {name:"Manoj Kumar",org:"Social Alpha",orgForm:"Public Sector",region:"C & S Asia",challenge:"De-risking and scaling science and technology innovations that address climate change, healthcare and extreme poverty — where both market and philanthropic capital are insufficient on their own; building full-stack innovation infrastructure that aligns incentives of society, market and state; sustaining long-term support for early-stage ventures that serve communities markets ignore."},
+  VIDYA:     {name:"Vidya Phalke",org:"Social Alpha",orgForm:"Public Sector",region:"C & S Asia",challenge:"Building the technology infrastructure needed to identify, evaluate and scale impact innovations across climate, health and poverty — where legacy systems and poor data environments constrain decision-making; translating frontier technology capabilities (cybersecurity, ML, data) into tools that work for social sector organizations operating at the margins."},
+  ABHISHEK:  {name:"Abhishek Goyal",org:"TATA Sustainability Group",orgForm:"Large Firms",region:"C & S Asia",challenge:"Embedding sustainability — energy, climate, circularity, biodiversity — across a vast diversified conglomerate spanning multiple sectors, geographies and hundreds of companies; translating high-level sustainability targets into measurable operational change across supply chains that are long, complex and often informally governed; building internal capacity and accountability mechanisms when ownership structures dilute sustainability mandates."},
+  OLGA:      {name:"Olga Rudneva",org:"Superhumans",orgForm:"Public Sector",region:"Europe",challenge:"Building and sustaining critical rehabilitation infrastructure for war trauma victims — prosthetics, surgery, psychological support — under active conflict conditions with compressed timelines; securing long-term funding for a humanitarian center that the urgency of war initially catalyzed but that needs structural financial resilience beyond emergency philanthropy; demonstrating that high-quality, scalable humanitarian infrastructure can be built in conflict zones as a model for other crises."}
+};
+
+const orgColors = {
+  "NGOs":"#C2185B","Public Sector":"#185FA5","Health & Education":"#0F6E56",
+  "Large Firms":"#993C1D","Entrepreneurs / Venture Caps":"#E65100"
+};
+
+const allEdges = [
+  // Original edges
+  {a:"ERAN",b:"BIGSNA",score:0.85,topic:"how to keep early-stage climate innovation alive when patient capital is scarce and risk appetite for emerging market solutions is structurally low"},
+  {a:"ERAN",b:"YASH",score:0.82,topic:"how to sustain decarbonization momentum when private capital migrates to AI and defense, and PE timelines conflict with climate tech commercialization cycles"},
+  {a:"ERAN",b:"ERIC",score:0.80,topic:"how cross-sector coalitions combining public, private and philanthropic capital can be structured to fill massive climate financing gaps"},
+  {a:"ERAN",b:"SANDY",score:0.75,topic:"how infrastructure capital for climate and water projects in emerging markets can be structured to attract institutional investors at scale"},
+  {a:"ERAN",b:"DANIEL",score:0.78,topic:"how to build ecosystem infrastructure — standards, data layers, trusted networks — that enables market formation where neither supply nor demand will move first"},
+  {a:"ERAN",b:"KEUNHWAN",score:0.75,topic:"how climate investors can engage with hard-to-abate industrial sectors and what commercial structures make deep industrial decarbonization venture-investable"},
+  {a:"ERIC",b:"SANDY",score:0.82,topic:"how to close massive climate infrastructure financing gaps using innovative public-private mechanisms when traditional debt and equity are insufficient"},
+  {a:"ERIC",b:"MARIA",score:0.80,topic:"how cross-sector coalitions and whole-of-government coordination can address systemic climate and disaster risks that exceed any single institution's capacity"},
+  {a:"ERIC",b:"BIGSNA",score:0.72,topic:"how patient capital and aligned incentives can unlock climate-resilient solutions for vulnerable communities when affordability and fragmented delivery block adoption"},
+  {a:"ERIC",b:"BRAD",score:0.78,topic:"how to catalyze coalition-building and innovative financing needed for climate action at a scale that vastly exceeds public sector capacity"},
+  {a:"DANIEL",b:"BIGSNA",score:0.85,topic:"how to reach and serve rural low-income communities with climate solutions when fragmented delivery, limited connectivity and thin margins make scaling extremely hard"},
+  {a:"DANIEL",b:"MICHAEL",score:0.82,topic:"how to build trust-based partnerships between technology providers and farmers and whether cross-sector win-win structures can solve the capital-adoption deadlock"},
+  {a:"DANIEL",b:"DESIREE",score:0.80,topic:"how small organizations serving rural communities can transition from high-touch bespoke models to scalable systems without losing the community trust that makes the model work"},
+  {a:"DANIEL",b:"FRANCIS",score:0.80,topic:"how small organizations serving rural communities can transition from high-touch bespoke models to scalable systems without losing the community trust that makes the model work"},
+  {a:"GERALDINE",b:"DON",score:0.88,topic:"how to address the relational, spiritual and moral dimensions of the climate crisis that purely technical and policy approaches consistently fail to reach"},
+  {a:"GERALDINE",b:"BADRUUN",score:0.82,topic:"how to shift the imaginative and cultural substrate of communities toward regenerative ways of living — moving hearts and minds, not just behaviors"},
+  {a:"GERALDINE",b:"DANA",score:0.78,topic:"how to build genuine trust and sustained cooperation across deeply divided communities, and whether healing broken relationships is a prerequisite to effective climate action"},
+  {a:"GERALDINE",b:"MBONG",score:0.75,topic:"how to challenge the economic and ideological systems driving the climate crisis from within institutions that are themselves part of those systems"},
+  {a:"GERALDINE",b:"SYDNEY",score:0.72,topic:"how frontline communities can build resilience and resistance against false climate solutions, predatory schemes and the rollback of environmental protections"},
+  {a:"GERALDINE",b:"BRAD",score:0.70,topic:"how to move communities from climate awareness and anxiety to genuine action — what psychological and relational conditions make this transition possible"},
+  {a:"DON",b:"DANA",score:0.85,topic:"how to build and sustain trusted relationships and meaningful dialogue across adversarial divides — what moral imagination and relational infrastructure this actually requires"},
+  {a:"DON",b:"MBONG",score:0.75,topic:"how to reconnect centers of power with ethical wisdom and alternative economic frameworks that challenge extractive models"},
+  {a:"DON",b:"VERONICA",score:0.72,topic:"how ethical wisdom and Indigenous knowledge systems can be integrated into the centers of power — universities, technology, finance — that currently ignore them"},
+  {a:"DON",b:"DESIREE",score:0.72,topic:"how small mission-driven organizations can cultivate values-aligned partnerships that provide patient support rather than short-term transactional funding"},
+  {a:"DON",b:"FRANCIS",score:0.72,topic:"how small mission-driven organizations can cultivate values-aligned partnerships that provide patient support rather than short-term transactional funding"},
+  {a:"DON",b:"BRAD",score:0.65,topic:"how moral imagination and trusted relationships can reach communities that have not yet connected their social justice work to the urgency of climate catastrophe"},
+  {a:"DON",b:"BADRUUN",score:0.72,topic:"how to build enduring communities of trust and imagination that sustain the long-term inner change needed for systemic transformation"},
+  {a:"DON",b:"OLGA",score:0.72,topic:"how organizations built on moral conviction and urgent humanitarian need can secure the long-term patient funding needed to become structurally resilient institutions"},
+  {a:"BRAD",b:"MARIA",score:0.85,topic:"how to build governance mechanisms and institutional architectures capable of responding to approaching climate tipping points and compounding systemic risks at global scale"},
+  {a:"BRAD",b:"ERAN",score:0.72,topic:"how to maintain momentum on large-scale climate intervention when political and capital support is wavering and denial is widespread"},
+  {a:"CLEMENT",b:"MICHAEL",score:0.78,topic:"how to build structured cross-sector partnerships connecting conservation and agricultural actors with corporations and funders through genuine win-win frameworks"},
+  {a:"CLEMENT",b:"DANA",score:0.72,topic:"how to reach beyond the already-converted to bring skeptical or resistant actors into conservation and sustainability coalitions"},
+  {a:"CLEMENT",b:"HYERIN",score:0.70,topic:"how to build globally trusted certification and standards frameworks that give credibility to conservation and behavioral carbon solutions seeking institutional funding"},
+  {a:"CLEMENT",b:"ANGELA",score:0.72,topic:"how to design supply chains and conservation partnerships that create genuine corporate value while delivering measurable environmental and community outcomes"},
+  {a:"DANA",b:"SYDNEY",score:0.82,topic:"how to sustain advocacy and community organizing in the face of hostile political and legal environments — what non-conventional strategies work when mainstream pathways are blocked"},
+  {a:"DANA",b:"TAPAS",score:0.75,topic:"how organizations can maintain coherence, trust and momentum when facing sudden shocks — budget cuts, political hostility, staff burnout — that threaten to unravel what has been built"},
+  {a:"DANA",b:"MARIA",score:0.72,topic:"how multi-stakeholder cooperation can be sustained through political change, geopolitical crisis and institutional resistance when coordination depends on leadership continuity"},
+  {a:"DANA",b:"HUSSAM",score:0.72,topic:"how political economy and active conflict shape both the causes of environmental problems and the feasibility of solutions in the Middle East"},
+  {a:"DANA",b:"OLGA",score:0.78,topic:"how organizations working across conflict and humanitarian crisis can build resilient teams and sustain cooperation when war, grief and burnout constantly threaten to unravel what has been built"},
+  {a:"BIGSNA",b:"TAPAS",score:0.75,topic:"how development and climate programs can sustain impact when funding cuts, management resistance and stakeholder readiness gaps undermine delivery"},
+  {a:"BIGSNA",b:"SANDY",score:0.78,topic:"how to attract and structure capital for climate and infrastructure solutions in emerging markets where risk appetite is low and regulatory environments are fragile"},
+  {a:"BIGSNA",b:"ANGELA",score:0.72,topic:"how large organizations can embed sustainability across value chains — from smallholder suppliers to corporate reporting — in ways that are measurable and genuinely meaningful"},
+  {a:"BIGSNA",b:"YASH",score:0.70,topic:"how clean technology scaling in Asia can be accelerated when PE time horizons, affordability constraints and last-mile adoption barriers all conflict with each other"},
+  {a:"HYERIN",b:"KEUNHWAN",score:0.72,topic:"how to translate high-level decarbonization commitments into verified, measurable emissions reductions when technical frameworks, data standards and market mechanisms don't yet exist"},
+  {a:"HYERIN",b:"ANGELA",score:0.75,topic:"how corporations can move beyond institutional sustainability credentials to technology-driven, data-backed approaches that make sustainability genuinely product-centric"},
+  {a:"HYERIN",b:"YASH",score:0.72,topic:"how AI and data discovery tools can accelerate the timeline from climate innovation to verified, commercialized outcomes"},
+  {a:"KEUNHWAN",b:"YASH",score:0.80,topic:"how to decarbonize energy-intensive industries within the constraints of PE time horizons and political volatility around energy costs and supply"},
+  {a:"KEUNHWAN",b:"SANDY",score:0.72,topic:"how hard-to-abate industries and infrastructure companies can attract capital needed for transformation when cost implications are enormous and regulatory environments are uncertain"},
+  {a:"MARIA",b:"SANDY",score:0.82,topic:"how governments and infrastructure companies can build resilient systems when disaster risk is systemic, capital is scarce and regulatory continuity is uncertain"},
+  {a:"MARIA",b:"TAPAS",score:0.70,topic:"how large institutions can maintain commitment to science-based approaches when management resistance, budget pressures and political change constantly challenge delivery"},
+  {a:"MARIA",b:"HUSSAM",score:0.75,topic:"how political economy and governance — not just technical analysis — determine whether water scarcity and climate resilience solutions actually get implemented"},
+  {a:"MBONG",b:"VERONICA",score:0.82,topic:"how to build alternative economic and knowledge frameworks that center African and Indigenous perspectives — and what institutional and narrative strategies can move these from margins to mainstream"},
+  {a:"MBONG",b:"SYDNEY",score:0.78,topic:"how to challenge the economic and political systems driving environmental injustice — and what advocacy, legal and narrative strategies create real leverage for frontline communities"},
+  {a:"MBONG",b:"BADRUUN",score:0.75,topic:"how to shift the foundational imagination and economic assumptions driving planetary destruction — and what creative and cultural tools can reach the scale needed"},
+  {a:"SYDNEY",b:"VERONICA",score:0.80,topic:"how to protect Indigenous and marginalized communities from legal, environmental and technological threats when the institutions meant to protect them are captured or hostile"},
+  {a:"SYDNEY",b:"DESIREE",score:0.75,topic:"how frontline organizations serving vulnerable communities can sustain their work when philanthropic funding is shrinking and governance constraints limit operational flexibility"},
+  {a:"SYDNEY",b:"FRANCIS",score:0.75,topic:"how frontline organizations serving vulnerable communities can sustain their work when philanthropic funding is shrinking and governance constraints limit operational flexibility"},
+  {a:"ANGELA",b:"SANDY",score:0.75,topic:"how large corporations in emerging markets can meet growing sustainability reporting mandates while integrating technology and supply chain transparency without sacrificing operational focus"},
+  {a:"DESIREE",b:"TAPAS",score:0.72,topic:"how small organizations running mission-critical programs survive funding shocks, governance constraints and stakeholder resistance while protecting community trust"},
+  {a:"FRANCIS",b:"TAPAS",score:0.72,topic:"how small organizations running mission-critical programs survive funding shocks, governance constraints and stakeholder resistance while protecting community trust"},
+  {a:"YG",b:"VERONICA",score:0.75,topic:"how universities can reconnect students with local communities and territorial knowledge — and what curricular and institutional changes make this genuinely possible"},
+  {a:"YG",b:"GERALDINE",score:0.70,topic:"how to build genuine affection and commitment to local communities in the face of urbanization and globalization pulling people toward cities"},
+  {a:"YG",b:"TAPAS",score:0.68,topic:"how educational institutions can build student and staff engagement with local community challenges when organizational inertia and funding constraints block change"},
+  {a:"HUSSAM",b:"MICHAEL",score:0.75,topic:"how water scarcity — driven by both physical and political causes — intersects with food security and agricultural adaptation in arid and water-stressed regions"},
+  {a:"YASH",b:"SANDY",score:0.72,topic:"how private equity and infrastructure capital can be coordinated to accelerate clean energy transition when government support is wavering and financing structures are misaligned"},
+  {a:"TAPAS",b:"VERONICA",score:0.72,topic:"how to embed science and rights-based frameworks into institutions — universities, management, governments — that resist new ideas and lack the science literacy to evaluate them"},
+  // New edges for new people
+  {a:"MOHAK",b:"YASH",score:0.82,topic:"how AI and frontier technology can be deployed to accelerate energy transition — whether through grid intelligence or molecular discovery — and what makes these tools commercially viable at scale"},
+  {a:"MOHAK",b:"KEUNHWAN",score:0.75,topic:"how AI and data systems can help energy-intensive industries plan and execute decarbonization when both the technical and regulatory environments are rapidly changing"},
+  {a:"MOHAK",b:"SANDY",score:0.78,topic:"how AI-driven grid intelligence and infrastructure capital can work together to build more reliable and sustainable energy and water systems in emerging markets"},
+  {a:"MOHAK",b:"ERIC",score:0.72,topic:"how frontier technology tools like grid AI can be integrated into the public-private financing and governance structures needed for large-scale climate adaptation infrastructure"},
+  {a:"MOHAK",b:"HYERIN",score:0.70,topic:"how machine learning and behavioral data systems can each contribute to more accurate, real-time measurement of energy and carbon outcomes at the community and grid level"},
+  {a:"MANOJ",b:"ERAN",score:0.85,topic:"how early-stage climate innovation can be de-risked and made investable — and what full-stack ecosystem infrastructure (capital, community, technology) is needed to bridge the gap between great ideas and scalable impact"},
+  {a:"MANOJ",b:"DANIEL",score:0.80,topic:"how marketplace and platform models can organize fragmented innovation ecosystems — whether for ecological restoration or climate technology — so that supply and demand align and patient capital can flow"},
+  {a:"MANOJ",b:"BIGSNA",score:0.85,topic:"how to build innovation infrastructure that serves smallholder communities and last-mile markets — where both capital and technology adoption are structurally constrained — at the intersection of development and climate"},
+  {a:"MANOJ",b:"BRAD",score:0.72,topic:"how to accelerate deployment of climate solutions at the scale and urgency that planetary tipping points demand — and what innovation infrastructure makes this possible beyond government and philanthropy alone"},
+  {a:"MANOJ",b:"ABHISHEK",score:0.75,topic:"how large conglomerates and innovation platforms can coordinate to embed sustainability into industrial supply chains — and what patient capital structures make this economically viable"},
+  {a:"VIDYA",b:"MOHAK",score:0.78,topic:"how technology infrastructure — machine learning, data systems, cybersecurity — can be built for social sector and climate organizations that operate in fragmented, under-resourced environments"},
+  {a:"VIDYA",b:"HYERIN",score:0.75,topic:"how data infrastructure and technology platforms can enable behavioral carbon tracking and emissions verification at institutional scale — and what makes these systems trustworthy and interoperable"},
+  {a:"VIDYA",b:"MANOJ",score:0.82,topic:"how technology and innovation infrastructure can be built to serve climate and social impact organizations — aligning the R&D ecosystem with communities and markets so that solutions reach the people who need them"},
+  {a:"VIDYA",b:"ABHISHEK",score:0.72,topic:"how technology infrastructure can support sustainability measurement and reporting across complex, multi-sector conglomerates where data environments are fragmented and governance is distributed"},
+  {a:"VIDYA",b:"ANGELA",score:0.70,topic:"how technology platforms can enable supply chain traceability and sustainability data collection for large corporations operating across complex, informally governed value chains"},
+  {a:"ABHISHEK",b:"ANGELA",score:0.82,topic:"how large corporations can embed sustainability — circularity, climate, biodiversity — across complex multi-sector supply chains, and what governance and measurement frameworks make these commitments operational rather than aspirational"},
+  {a:"ABHISHEK",b:"SANDY",score:0.78,topic:"how large organizations in emerging markets can meet escalating sustainability reporting mandates while building the internal capacity and data infrastructure to make those reports meaningful"},
+  {a:"ABHISHEK",b:"KEUNHWAN",score:0.80,topic:"how to decarbonize and transform industrial operations across a major conglomerate — and what the shared challenges of hydrogen, circularity and supply chain decarbonization look like when you're operating at national scale"},
+  {a:"ABHISHEK",b:"BIGSNA",score:0.72,topic:"how large institutions and innovation platforms can align incentives to support smallholder and community livelihoods while meeting corporate sustainability targets"},
+  {a:"ABHISHEK",b:"HYERIN",score:0.70,topic:"how technology-driven sustainability measurement can be deployed across large, complex organizations — and what verified behavioral and operational carbon data looks like at conglomerate scale"},
+  {a:"OLGA",b:"MARIA",score:0.82,topic:"how to build institutional infrastructure for disaster and crisis response under extreme time pressure — and what governance, funding and organizational models make it resilient beyond the emergency that created it"},
+  {a:"OLGA",b:"SYDNEY",score:0.75,topic:"how organizations defending human rights and dignity in hostile legal and political environments can sustain their work when the systems meant to protect them are captured or indifferent"},
+  {a:"OLGA",b:"DESIREE",score:0.72,topic:"how small mission-driven organizations serving vulnerable communities can secure structural funding and build governance resilience when their founding urgency fades and philanthropic attention moves on"},
+  {a:"OLGA",b:"FRANCIS",score:0.72,topic:"how small mission-driven organizations serving vulnerable communities can secure structural funding and build governance resilience when their founding urgency fades and philanthropic attention moves on"},
+  {a:"OLGA",b:"ERIC",score:0.70,topic:"how to build coalitions and financing structures for large-scale humanitarian and climate infrastructure when public systems are overwhelmed and private capital needs proof of concept before committing"},
+];
+
+const W=760, H=720, R=9, cx=380, cy=360, radius=300;
+const ids = Object.keys(people);
+ids.forEach((id,i)=>{
+  const a=(i/ids.length)*2*Math.PI-Math.PI/2;
+  people[id].x=cx+radius*Math.cos(a);
+  people[id].y=cy+radius*Math.sin(a);
+});
+
+const svg=document.getElementById('graph');
+svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+const edgeGroup=document.createElementNS("http://www.w3.org/2000/svg","g");
+const nodeGroup=document.createElementNS("http://www.w3.org/2000/svg","g");
+svg.appendChild(edgeGroup); svg.appendChild(nodeGroup);
+
+let activeNode=null, activeEdge=null;
+
+function showSidebar(html){
+  document.getElementById('sidebar-empty').style.display='none';
+  const c=document.getElementById('sidebar-content');
+  c.classList.add('visible'); c.innerHTML=html;
+}
+function hideSidebar(){
+  document.getElementById('sidebar-empty').style.display='flex';
+  const c=document.getElementById('sidebar-content');
+  c.classList.remove('visible'); c.innerHTML='';
+}
+
+function nodeHTML(id){
+  const p=people[id];
+  const col=orgColors[p.orgForm];
+  return `<div class="s-type">Changemaker</div>
+    <div class="s-name">${p.name}</div>
+    <div class="s-org">${p.org}</div>
+    <div class="s-tag-row">
+      <div class="s-color-rect" style="background:${col};"></div>
+      <span class="s-tag">${p.orgForm}</span>
+      <span class="s-tag">${p.region}</span>
+    </div>
+    <div class="s-section-label">Core challenges</div>
+    <div class="s-section-body">${p.challenge}</div>`;
+}
+
+function edgeHTML(e){
+  const pa=people[e.a], pb=people[e.b];
+  const dA=`<div class="s-color-rect" style="background:${orgColors[pa.orgForm]};width:20px;height:9px;border-radius:2px;display:inline-block;vertical-align:middle;margin-right:5px;"></div>`;
+  const dB=`<div class="s-color-rect" style="background:${orgColors[pb.orgForm]};width:20px;height:9px;border-radius:2px;display:inline-block;vertical-align:middle;margin-right:5px;"></div>`;
+  return `<div class="s-type">Shared challenge</div>
+    <div style="margin-bottom:0.75rem;"><span class="score-pill">Match: ${e.score.toFixed(2)}</span></div>
+    <div class="edge-card">
+      <div class="edge-card-name">${dA}${pa.name}</div>
+      <div class="edge-card-org">${pa.org} · ${pa.orgForm} · ${pa.region}</div>
+      <div class="edge-card-challenge">${pa.challenge}</div>
+    </div>
+    <div class="edge-card">
+      <div class="edge-card-name">${dB}${pb.name}</div>
+      <div class="edge-card-org">${pb.org} · ${pb.orgForm} · ${pb.region}</div>
+      <div class="edge-card-challenge">${pb.challenge}</div>
+    </div>
+    <div class="topic-box">
+      <div class="topic-box-label">They can discuss</div>
+      <div class="topic-box-text">${e.topic}</div>
+    </div>`;
+}
+
+function shapeFor(region){
+  switch(region){
+    case "N. America": return null; // circle r=9
+    case "Latin America": return `M${-R*0.85},${-R*0.85} L${R*0.85},${-R*0.85} L${R*0.85},${R*0.85} L${-R*0.85},${R*0.85} Z`; // square slightly smaller
+    case "Africa":{ const r=R*1.1; return `M0,${-r} L${r*0.87},${r*0.5} L${-r*0.87},${r*0.5} Z`; } // triangle slightly bigger
+    case "Middle East":{ const o=R*1.25,i=R*0.5; return `M0,${-o} L${i},${-i} L${o},0 L${i},${i} L0,${o} L${-i},${i} L${-o},0 L${-i},${-i} Z`; } // 4-pt star bigger
+    case "Europe":{ const r=R*1.1; return `M0,${-r} L${r},0 L0,${r} L${-r},0 Z`; } // diamond slightly bigger
+    case "C & S Asia":{ const r=R*1.1,pts=[]; for(let k=0;k<5;k++){const a=-Math.PI/2+(2*Math.PI*k/5);pts.push(`${r*Math.cos(a)},${r*Math.sin(a)}`);} return `M${pts.join(' L')} Z`; } // pentagon slightly bigger
+    case "SE Asia":{ const r=R*1.05,pts=[]; for(let k=0;k<6;k++){const a=-Math.PI/2+(2*Math.PI*k/6);pts.push(`${r*Math.cos(a)},${r*Math.sin(a)}`);} return `M${pts.join(' L')} Z`; } // hexagon slightly bigger
+    case "E Asia":{ const o=R*1.3,i=R*0.52,pts=[]; for(let k=0;k<10;k++){const a=-Math.PI/2+(Math.PI*k/5);const r=k%2===0?o:i;pts.push(`${r*Math.cos(a)},${r*Math.sin(a)}`);} return `M${pts.join(' L')} Z`; } // 5-pt star bigger
+    default: return null;
+  }
+}
+
+function render(){
+  const orgF=document.getElementById('filter-org').value;
+  const personF=document.getElementById('filter-person').value;
+  const minS=parseFloat(document.getElementById('filter-score').value);
+  edgeGroup.innerHTML=""; nodeGroup.innerHTML="";
+
+  let edges=allEdges.filter(e=>e.score>=minS);
+  if(orgF!=="all"){const m=ids.filter(id=>people[id].orgForm===orgF);edges=edges.filter(e=>m.includes(e.a)||m.includes(e.b));}
+  if(personF!=="all") edges=edges.filter(e=>e.a===personF||e.b===personF);
+
+  edges.forEach(e=>{
+    const pa=people[e.a],pb=people[e.b];
+    if(!pa||!pb)return;
+    const dx=pb.x-pa.x,dy=pb.y-pa.y,dist=Math.sqrt(dx*dx+dy*dy);
+    const ux=dx/dist,uy=dy/dist;
+    const x1=pa.x+ux*R,y1=pa.y+uy*R,x2=pb.x-ux*R,y2=pb.y-uy*R;
+    const mx=(pa.x+pb.x)/2-uy*30,my=(pa.y+pb.y)/2+ux*30;
+    const isHL=activeEdge&&((activeEdge.a===e.a&&activeEdge.b===e.b)||(activeEdge.a===e.b&&activeEdge.b===e.a));
+    const isNode=activeNode&&(activeNode===e.a||activeNode===e.b);
+    const line=document.createElementNS("http://www.w3.org/2000/svg","path");
+    line.setAttribute("d",`M${x1},${y1} Q${mx},${my} ${x2},${y2}`);
+    line.setAttribute("fill","none");
+    line.setAttribute("stroke",isHL?"#1a6b4a":isNode?"#1a6b4a":"#bbb");
+    line.setAttribute("stroke-width",isHL?Math.max(2.5,e.score*4):isNode?Math.max(1.5,e.score*2.5):Math.max(0.5,e.score*1.5));
+    line.setAttribute("stroke-opacity",isHL?"1":isNode?"0.85":"0.35");
+    line.style.cursor="pointer";
+    line.addEventListener("click",function(ev){ev.stopPropagation();activeNode=null;activeEdge=e;render();showSidebar(edgeHTML(e));});
+    edgeGroup.appendChild(line);
+  });
+
+  ids.forEach(id=>{
+    const p=people[id];
+    const g=document.createElementNS("http://www.w3.org/2000/svg","g");
+    g.setAttribute("transform",`translate(${p.x},${p.y})`);
+    g.style.cursor="pointer";
+    const isActive=activeNode===id;
+    const isEdgeNode=activeEdge&&(activeEdge.a===id||activeEdge.b===id);
+    const col=orgColors[p.orgForm];
+    const sp=shapeFor(p.region);
+    if(sp){
+      const path=document.createElementNS("http://www.w3.org/2000/svg","path");
+      path.setAttribute("d",sp);
+      path.setAttribute("fill",col);
+      path.setAttribute("stroke","white");
+      path.setAttribute("stroke-width",isActive?"2.5":"1.5");
+      if(isActive)path.setAttribute("transform","scale(1.3)");
+      g.appendChild(path);
+    } else {
+      const circle=document.createElementNS("http://www.w3.org/2000/svg","circle");
+      circle.setAttribute("r",isActive?R+3:R);
+      circle.setAttribute("fill",col);
+      circle.setAttribute("stroke","white");
+      circle.setAttribute("stroke-width",isActive?"2.5":"1.5");
+      g.appendChild(circle);
+    }
+    const angle=Math.atan2(p.y-cy,p.x-cx);
+    const labelR = R + 17 + (Math.abs(Math.cos(angle)) > 0.7 ? 4 : 0);
+    const lx=Math.cos(angle)*labelR,ly=Math.sin(angle)*labelR;
+    const label=document.createElementNS("http://www.w3.org/2000/svg","text");
+    // Use first name + surname initial
+    const parts=p.name.split(' ');
+    const shortName=parts[0]+(parts.length>1?' '+parts[parts.length-1][0]+'.':'');
+    label.setAttribute("text-anchor","middle");
+    label.setAttribute("font-size","9");
+    label.setAttribute("fill",isActive?"#1a6b4a":isEdgeNode?"#1a6b4a":"#53565A");
+    label.setAttribute("font-weight",isActive||isEdgeNode?"500":"400");
+    label.setAttribute("pointer-events","none");
+    label.setAttribute("x",lx); label.setAttribute("y",ly+3.5);
+    label.textContent=shortName;
+    g.appendChild(label);
+    g.addEventListener("click",function(ev){
+      ev.stopPropagation();
+      if(activeNode===id){activeNode=null;hideSidebar();}
+      else{activeNode=id;activeEdge=null;showSidebar(nodeHTML(id));}
+      render();
+    });
+    nodeGroup.appendChild(g);
+  });
+}
+
+svg.addEventListener("click",()=>{activeNode=null;activeEdge=null;hideSidebar();render();});
+
+const ps=document.getElementById('filter-person');
+ids.slice().sort((a,b)=>people[a].name.localeCompare(people[b].name)).forEach(id=>{
+  const o=document.createElement('option');o.value=id;o.textContent=people[id].name;ps.appendChild(o);
+});
+['filter-org','filter-person','filter-score'].forEach(id=>{
+  document.getElementById(id).addEventListener('change',()=>{activeNode=null;activeEdge=null;hideSidebar();render();});
+});
+
+render();
+</script>
+</body>
+</html>
