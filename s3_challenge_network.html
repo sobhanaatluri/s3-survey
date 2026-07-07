@@ -13,8 +13,8 @@ body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f5f4f1; co
 .controls label { font-size: 12px; opacity: 0.8; }
 .controls select { font-size: 12px; padding: 4px 8px; border-radius: 5px; border: none; background: rgba(255,255,255,0.2); color: white; cursor: pointer; }
 .controls select option { background: #2E2D29; color: white; }
-.main { display: flex; flex: 1; overflow: hidden; }
-.graph-area { flex: 1; position: relative; overflow: hidden; }
+.main { display: flex; flex: 1; overflow: hidden; min-height: 0; height: calc(100vh - 88px); }
+.graph-area { flex: 1; position: relative; overflow: hidden; min-height: 0; }
 svg { display: block; width: 100%; height: 100%; }
 .sidebar { width: 310px; flex-shrink: 0; background: white; border-left: 0.5px solid #e0ddd6; overflow-y: auto; display: flex; flex-direction: column; }
 .sidebar-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; padding: 2rem; text-align: center; color: #888; }
@@ -59,7 +59,7 @@ svg { display: block; width: 100%; height: 100%; }
       <option value="Large Firms">Large Firms</option>
       <option value="Entrepreneurs / Venture Caps">Entrepreneurs/VCs</option>
     </select>
-    <label>Person:</label>
+    <label>Changemaker:</label>
     <select id="filter-person"><option value="all">All</option></select>
     <label>Min score:</label>
     <select id="filter-score">
@@ -71,7 +71,7 @@ svg { display: block; width: 100%; height: 100%; }
 </div>
 
 <div class="main">
-  <div class="graph-area"><svg id="graph" viewBox="0 0 760 720"></svg></div>
+  <div class="graph-area"><svg id="graph"></svg></div>
   <div class="sidebar">
     <div class="sidebar-empty" id="sidebar-empty">
       <div class="icon">⬡</div>
@@ -246,7 +246,10 @@ const allEdges = [
   {a:"OLGA",b:"ERIC",score:0.70,topic:"how to build coalitions and financing structures for large-scale humanitarian and climate infrastructure when public systems are overwhelmed and private capital needs proof of concept before committing"},
 ];
 
-const W=760, H=720, R=9, cx=380, cy=370, radius=260;
+const graphEl = document.getElementById('graph');
+  const W = graphEl.parentElement.clientWidth || 760;
+  const H = graphEl.parentElement.clientHeight || 680;
+  const R=9, cx=W/2, cy=H/2, radius=Math.min(W,H)*0.38;
 const ids = Object.keys(people);
 ids.forEach((id,i)=>{
   const a=(i/ids.length)*2*Math.PI-Math.PI/2;
@@ -256,6 +259,8 @@ ids.forEach((id,i)=>{
 
 const svg=document.getElementById('graph');
 svg.setAttribute('viewBox',`-20 -20 ${W+40} ${H+40}`);
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
 const edgeGroup=document.createElementNS("http://www.w3.org/2000/svg","g");
 const nodeGroup=document.createElementNS("http://www.w3.org/2000/svg","g");
 svg.appendChild(edgeGroup); svg.appendChild(nodeGroup);
@@ -276,7 +281,7 @@ function hideSidebar(){
 function nodeHTML(id){
   const p=people[id];
   const col=orgColors[p.orgForm];
-  return `<div class="s-type">Changemaker</div>
+  return `<div class="s-type">Changemaker Profile</div>
     <div class="s-name">${p.name}</div>
     <div class="s-org">${p.org}</div>
     <div class="s-tag-row">
