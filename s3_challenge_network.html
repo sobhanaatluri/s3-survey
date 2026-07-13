@@ -9,6 +9,8 @@
 body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f5f4f1; color: #2E2D29; display: flex; flex-direction: column; min-height: 100vh; }
 .top-bar { background: #1a6b4a; color: white; padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
 .top-bar h1 { font-size: 15px; font-weight: 500; }
+.atlas-home-btn { font-size: 12px; color: white; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35); padding: 5px 12px; border-radius: 99px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; transition: background 0.15s ease; white-space: nowrap; }
+.atlas-home-btn:hover { background: rgba(255,255,255,0.3); }
 .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-left: auto; }
 .controls label { font-size: 12px; opacity: 0.8; }
 .controls select { font-size: 12px; padding: 4px 8px; border-radius: 5px; border: none; background: rgba(255,255,255,0.2); color: white; cursor: pointer; }
@@ -49,6 +51,7 @@ svg { display: block; width: 100%; flex: 1; min-height: 0; }
 
 <div class="top-bar">
   <h1>S3 2026 — Shared Challenge Network</h1>
+  <a class="atlas-home-btn" href="https://sobhanaatluri.github.io/s3-survey/atlas.html">← Atlas Home</a>
   <div class="controls">
     <label>Org form:</label>
     <select id="filter-org">
@@ -61,19 +64,14 @@ svg { display: block; width: 100%; flex: 1; min-height: 0; }
     </select>
     <label>Changemaker:</label>
     <select id="filter-person"><option value="all">All</option></select>
-    <label>Min score:</label>
-    <select id="filter-score">
-      <option value="0.55">≥ 0.55</option>
-      <option value="0.70" selected>≥ 0.70</option>
-      <option value="0.80">≥ 0.80</option>
-    </select>
   </div>
 </div>
 
 <div class="main">
   <div class="graph-area" id="graph-area" style="position:relative;"><svg id="graph"></svg>
-<div id="graph-legend" style="background:white;border-top:0.5px solid #e0ddd6;padding:0.4rem 1.25rem;display:flex;align-items:center;justify-content:center;gap:2.5rem;flex-shrink:0;">
-  <div style="display:flex;align-items:flex-start;gap:2.5rem;">
+<div id="graph-legend" style="background:white;border-top:0.5px solid #e0ddd6;padding:0.4rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-shrink:0;">
+  <a href="https://sobhanaatluri.github.io/s3-survey/atlas.html" style="flex-shrink:0;background:#1a6b4a;color:white;padding:8px 14px;border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:12.5px;font-weight:600;text-decoration:none;white-space:nowrap;">← Atlas Home</a>
+  <div style="display:flex;align-items:flex-start;gap:2.5rem;margin:0 auto;">
     <div>
       <div class="leg-title">Org form</div>
       <div class="leg-grid">
@@ -145,6 +143,7 @@ const people = {
   VIDYA:     {name:"Vidya Phalke",org:"Social Alpha",orgForm:"Public Sector",region:"C & S Asia",challenge:"Building the technology infrastructure needed to identify, evaluate and scale impact innovations across climate, health and poverty — where legacy systems and poor data environments constrain decision-making; translating frontier technology capabilities (cybersecurity, ML, data) into tools that work for social sector organizations operating at the margins."},
   ABHISHEK:  {name:"Abhishek Goyal",org:"TATA Sustainability Group",orgForm:"Large Firms",region:"C & S Asia",challenge:"Embedding sustainability — energy, climate, circularity, biodiversity — across a vast diversified conglomerate spanning multiple sectors, geographies and hundreds of companies; translating high-level sustainability targets into measurable operational change across supply chains that are long, complex and often informally governed; building internal capacity and accountability mechanisms when ownership structures dilute sustainability mandates."},
   OLGA:      {name:"Olga Rudneva",org:"Superhumans",orgForm:"Public Sector",region:"Europe",challenge:"Building and sustaining critical rehabilitation infrastructure for war trauma victims — prosthetics, surgery, psychological support — under active conflict conditions with compressed timelines; securing long-term funding for a humanitarian center that the urgency of war initially catalyzed but that needs structural financial resilience beyond emergency philanthropy; demonstrating that high-quality, scalable humanitarian infrastructure can be built in conflict zones as a model for other crises."}
+  ,RYO:      {name:"Ryo Tateishi",org:"Mitsubishi Corporation (Americas)",orgForm:"Large Firms",region:"E Asia",challenge:"Accelerating Mitsubishi's transition to a low-carbon society across a vast multi-sector conglomerate spanning energy, mining, mobility, materials and food; building new carbon credit and climate consultancy business lines where market mechanisms and internal capability are still maturing; translating corporate sustainability strategy into cross-functional business development across North America."}
 };
 
 const orgColors = {
@@ -246,6 +245,12 @@ const allEdges = [
   {a:"OLGA",b:"DESIREE",score:0.72,topic:"how small mission-driven organizations serving vulnerable communities can secure structural funding and build governance resilience when their founding urgency fades and philanthropic attention moves on"},
   {a:"OLGA",b:"FRANCIS",score:0.72,topic:"how small mission-driven organizations serving vulnerable communities can secure structural funding and build governance resilience when their founding urgency fades and philanthropic attention moves on"},
   {a:"OLGA",b:"ERIC",score:0.70,topic:"how to build coalitions and financing structures for large-scale humanitarian and climate infrastructure when public systems are overwhelmed and private capital needs proof of concept before committing"},
+  // New edges for Ryo Tateishi (added from bio only, no survey response)
+  {a:"RYO",b:"ABHISHEK",score:0.80,topic:"how to embed and operationalize sustainability strategy across a vast multi-sector conglomerate spanning many operating companies and geographies, where accountability and execution get diluted by scale"},
+  {a:"RYO",b:"MARIA",score:0.75,topic:"how to bring the private sector in as an active de-risking partner in national resilience and disaster-risk coalitions, rather than a passive stakeholder"},
+  {a:"RYO",b:"KEUNHWAN",score:0.70,topic:"how carbon credit mechanisms and climate consultancy can help finance the transition costs of heavy-industry decarbonization like new iron reduction methods"},
+  {a:"RYO",b:"BIGSNA",score:0.68,topic:"how carbon credit financing mechanisms can help unlock early-stage climate capital for community-first innovation in emerging markets"},
+  {a:"RYO",b:"ERAN",score:0.62,topic:"how corporate business development functions at large conglomerates can serve as the ecosystem-orchestration partner needed to keep early-stage climate investment alive"},
 ];
 
 const svg=document.getElementById('graph');
@@ -338,10 +343,9 @@ function shapeFor(region){
 function render(){
   const orgF=document.getElementById('filter-org').value;
   const personF=document.getElementById('filter-person').value;
-  const minS=parseFloat(document.getElementById('filter-score').value);
   edgeGroup.innerHTML=""; nodeGroup.innerHTML="";
 
-  let edges=allEdges.filter(e=>e.score>=minS);
+  let edges=allEdges.slice();
   if(orgF!=="all"){const m=ids.filter(id=>people[id].orgForm===orgF);edges=edges.filter(e=>m.includes(e.a)||m.includes(e.b));}
   if(personF!=="all") edges=edges.filter(e=>e.a===personF||e.b===personF);
 
@@ -423,7 +427,7 @@ const ps=document.getElementById('filter-person');
 ids.slice().sort((a,b)=>people[a].name.localeCompare(people[b].name)).forEach(id=>{
   const o=document.createElement('option');o.value=id;o.textContent=people[id].name;ps.appendChild(o);
 });
-['filter-org','filter-person','filter-score'].forEach(id=>{
+['filter-org','filter-person'].forEach(id=>{
   document.getElementById(id).addEventListener('change',()=>{activeNode=null;activeEdge=null;hideSidebar();render();});
 });
 
