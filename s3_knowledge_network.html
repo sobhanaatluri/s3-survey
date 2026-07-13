@@ -65,13 +65,6 @@ svg { display: block; width: 100%; flex: 1; min-height: 0; }
     </select>
     <label>Changemaker:</label>
     <select id="filter-person"><option value="all">All</option></select>
-    <label>Min score:</label>
-    <select id="filter-score">
-      <option value="0">All</option>
-      <option value="0.7" selected>≥ 0.70</option>
-      <option value="0.8">≥ 0.80</option>
-      <option value="0.9">≥ 0.90</option>
-    </select>
   </div>
 </div>
 
@@ -309,6 +302,10 @@ const people = {
     seeks:"Long-term structural funding models that go beyond emergency philanthropy; how to build institutional resilience for organizations born in crisis so they survive when urgency fades; models for replicating humanitarian infrastructure in other conflict-affected regions.",
     problems:"Conflict & displacement; Public health; Climate migration; Environmental justice",
     solutions:"Community organizing; Coalition building; Knowledge exchange; Disaster risk reduction; Education"}
+  ,RYO:      {name:"Ryo Tateishi",org:"Mitsubishi Corporation (Americas)",orgForm:"Large Firms",region:"E Asia",
+    bio:"Director of Business Development at Mitsubishi Corporation (Americas), leading strategic planning and cross-functional collaboration across energy, mining, mobility, materials, food and environmental business in North America. Deep interest and expertise in corporate sustainability and climate change, active in Mitsubishi's low-carbon transformation. Contributed to building carbon credit and climate consultancy business lines. Stanford MBA, University of Tokyo law degree.",
+    brings:"Cross-sector business development at a major global trading house spanning energy, mining, mobility, materials, food and environmental business; hands-on experience building carbon credit and climate consultancy business lines; corporate strategic planning for low-carbon transition at conglomerate scale.",
+    seeks:"Exposure to emerging climate technologies, startup partnership models and frontier decarbonization approaches across sectors — mining, mobility, materials, food — that could be evaluated for pilots or investment within Mitsubishi's cross-sector portfolio; deeper understanding of how corporate capital can co-invest alongside venture and philanthropic capital in early-stage climate innovation."}
 };
 
 const orgColors = {
@@ -590,7 +587,16 @@ const allEdges = [
   // ABHISHEK receives
   {from:"ANGELA",to:"ABHISHEK",score:0.78,topic:"how IP&L accounting, B Corp certification and Socio-Climate Vulnerability Index offer measurement and governance frameworks that Tata's sustainability embedding work can adapt"},
   {from:"KEUNHWAN",to:"ABHISHEK",score:0.78,topic:"how steel decarbonization at national scale reveals the cost, supply chain and downstream industry challenges that any conglomerate industrial transformation program will face"},
-  {from:"MANOJ",to:"ABHISHEK",score:0.70,topic:"how Social Alpha's innovation curation model offers Tata a pipeline of deep-tech solutions for the sustainability challenges Abhishek is embedding across the conglomerate"}
+  {from:"MANOJ",to:"ABHISHEK",score:0.70,topic:"how Social Alpha's innovation curation model offers Tata a pipeline of deep-tech solutions for the sustainability challenges Abhishek is embedding across the conglomerate"},
+
+  // New edges for Ryo Tateishi (added from bio only, no survey response)
+  {from:"RYO",to:"KEUNHWAN",score:0.82,topic:"how carbon credit mechanisms and climate consultancy experience can offer POSCO carbon accounting and hard-to-abate sector financing approaches its own R&D pipeline hasn't reached"},
+  {from:"RYO",to:"YASH",score:0.78,topic:"how a North America-based, cross-sector conglomerate business development view — energy, mining, mobility, materials, food — offers exactly the NA context and cross-vertical awareness Yash is seeking"},
+  {from:"RYO",to:"ABHISHEK",score:0.76,topic:"how embedding sustainability and low-carbon strategy across a vast multi-sector conglomerate at Mitsubishi offers a comparable case study for TATA's own conglomerate-scale sustainability challenges"},
+  {from:"RYO",to:"ERAN",score:0.70,topic:"how corporate business development driving real adoption of carbon credit and climate consultancy offerings offers a live example of corporate climate technology adoption"},
+  {from:"ERAN",to:"RYO",score:0.72,topic:"how a front-row view of emerging climate technologies and venture-investable business models can help Ryo identify frontier innovations worth piloting inside Mitsubishi's portfolio"},
+  {from:"MANOJ",to:"RYO",score:0.65,topic:"how a curated pipeline of 350+ de-risked science and technology innovations offers Mitsubishi's business development team a ready-made source of pilot and investment candidates"},
+  {from:"RYO",to:"MARIA",score:0.62,topic:"how private-sector business development experience at conglomerate scale offers the active private-sector partner Maria's trans-disciplinary resilience model is seeking"}
 ];
 
 const R = 9;
@@ -733,10 +739,9 @@ function edgeHTML(e){
 function render(){
   const orgF=document.getElementById('filter-org').value;
   const personF=document.getElementById('filter-person').value;
-  const minS=parseFloat(document.getElementById('filter-score').value);
   edgeGroup.innerHTML=""; nodeGroup.innerHTML="";
 
-  let edges=allEdges.filter(e=>e.score>=minS);
+  let edges=allEdges.slice();
   if(orgF!=="all"){const m=ids.filter(id=>people[id].orgForm===orgF);edges=edges.filter(e=>m.includes(e.from)||m.includes(e.to));}
   if(personF!=="all") edges=edges.filter(e=>e.from===personF||e.to===personF);
 
@@ -829,7 +834,7 @@ const ps=document.getElementById('filter-person');
 ids.slice().sort((a,b)=>people[a].name.localeCompare(people[b].name)).forEach(id=>{
   const o=document.createElement('option');o.value=id;o.textContent=people[id].name;ps.appendChild(o);
 });
-['filter-org','filter-person','filter-score'].forEach(id=>{
+['filter-org','filter-person'].forEach(id=>{
   document.getElementById(id).addEventListener('change',()=>{activeNode=null;activeEdge=null;hideSidebar();render();});
 });
 
